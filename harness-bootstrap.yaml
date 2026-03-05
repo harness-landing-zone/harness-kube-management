@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: cluster-addons
+  name: gitops-agent
   namespace: gitops-agent
 spec:
   syncPolicy:
@@ -18,7 +18,7 @@ spec:
         addonChart: application-sets
   template:
     metadata:
-      name: cluster-addons
+      name: gitops-agent
     spec:
       project: 2bb79a64
       sources:
@@ -33,7 +33,7 @@ spec:
           valuesObject:
             agentTokenSecretName: my-agent-token
           valueFiles:
-            - $valuescharts/application-sets/test-values-harness-bootstrap.yaml
+            - $values/charts/application-sets/test-values-harness-bootstrap.yaml
       destination:
         namespace: gitops-agent
         name: '{{.name}}'

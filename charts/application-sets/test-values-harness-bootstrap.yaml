@@ -3,7 +3,7 @@ mergeValues:
     use: true
 
 useSelectors: true
-repoURLGit: "https://github.com/markoskandylis/harness-kube-management.git"
+repoURLGit: "https://github.com/harness-landing-zone/harness-kube-management"
 repoURLGitRevision: "main"
 repoURLGitBasePath: ""
 valueFiles: []

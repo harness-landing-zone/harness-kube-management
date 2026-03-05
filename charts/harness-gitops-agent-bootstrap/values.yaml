@@ -29,6 +29,19 @@ harnessAgent:
 gitopsAgent:
   argo-cd:
     enabled: true
+    repoServer:
+      # Ensure helm-secrets wrapper invokes the real Helm binary.
+      env:
+        - name: HELM_BIN
+          value: /usr/local/bin/helm
+        - name: HELM_SECRETS_HELM_PATH
+          value: /usr/local/bin/helm
+        - name: ARGOCD_EXEC_TIMEOUT
+          value: 5m
+    configs:
+      params:
+        server.repo.server.timeout.seconds: "300"
+        controller.repo.server.timeout.seconds: "300"
 
   harness:
     identity:
