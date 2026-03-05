@@ -1,3 +1,24 @@
+harness-agent-controller:
+  enabled: true
+  namespace: gitops-agent
+  releaseName: harness-agent-controller
+  chartName: harness-gitops-agent-controller
+  defaultVersion: "0.2.0"
+  path: "charts/harness-gitops-agent-controller"
+  annotationsApp:
+    argocd.argoproj.io/sync-wave: "10"
+  selector:
+    matchExpressions:
+      - key: enable_agent
+        operator: In
+        values: ["true"]
+  valuesObject:
+    image:
+      repository: '{{default "mkandylis/harness-gitops-agent-operator" (index .metadata.annotations "harness_controller_image_repository")}}'
+      tag: '{{default "dev" (index .metadata.annotations "harness_controller_image_tag")}}'
+    manager:
+      zapDevelopment: false
+
 harness-agent-bootstrap:
   enabled: true
   namespace: gitops-agent
