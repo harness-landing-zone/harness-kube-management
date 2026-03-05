@@ -73,7 +73,7 @@ gitopsAgent:
         memory: "512Mi"
     image:
       repository: harness/gitops-agent
-      tag: v0.84.1
+      tag: v0.93.0
       imagePullPolicy: IfNotPresent
     pdb:
       enabled: false

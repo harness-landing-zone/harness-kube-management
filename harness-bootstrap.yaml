@@ -33,7 +33,7 @@ spec:
           valuesObject:
             agentTokenSecretName: my-agent-token
           valueFiles:
-            - $values/charts/application-sets/test-values-harness-bootstrap.yaml
+            - $valuescharts/application-sets/test-values-harness-bootstrap.yaml
       destination:
         namespace: gitops-agent
         name: '{{.name}}'
