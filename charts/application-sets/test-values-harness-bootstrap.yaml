@@ -1,7 +1,7 @@
 mergeValues:
   harness-bootstrap:
     use: true
-
+releaseName: default
 useSelectors: true
 repoURLGit: "https://github.com/harness-landing-zone/harness-kube-management"
 repoURLGitRevision: "main"
