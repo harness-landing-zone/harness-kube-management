@@ -1,7 +1,7 @@
 harness-agent-controller:
   enabled: true
   namespace: gitops-agent
-  releaseName: harness-agent-controller
+  releaseName: agent-controller
   chartName: harness-gitops-agent-controller
   defaultVersion: "0.2.0"
   path: "charts/harness-gitops-agent-controller"
