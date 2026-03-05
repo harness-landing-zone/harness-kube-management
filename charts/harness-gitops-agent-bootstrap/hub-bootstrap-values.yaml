@@ -6,15 +6,15 @@ harnessAgent:
     tokenSecretRef: "my-agent-token"
     clusterRegistration:
       enabled: true
-      name: "hub"
+      name: "spoke"
       connectionType: "IN_CLUSTER"
 
 gitopsAgent:
   harness:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
-      orgIdentifier: "Harness_Platform_Management"
-      projectIdentifier: "gitopshub"
+      orgIdentifier: "latform_team"
+      projectIdentifier: "Gitops"
       agentIdentifier: "hubagent"
     configMap:
       http:
