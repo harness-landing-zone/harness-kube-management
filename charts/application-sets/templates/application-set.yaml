@@ -19,10 +19,6 @@
 {{- $argoProjectName := (default "default" .Values.argoProjectName ) -}}
 {{- $applyNestedSelectors := default "false" .Values.applyNestedSelectors -}}
 {{- $templatePatch := .Values.templatePatch -}}
-{{- $appNamePrefix := "" -}}
-{{- if $releaseName -}}
-{{- $appNamePrefix = printf "%s-" $releaseName -}}
-{{- end -}}
 
 
 {{/* Merge values From Default */}}
@@ -156,9 +152,9 @@ spec:
   template:
     metadata:
       {{- if $chartConfig.appSetName }}
-      name: '{{$appNamePrefix}}{{ $chartConfig.appSetName }}-{{`{{ .values.addonChartVersion }}`}}'
+      name: '{{$releaseName}}-{{ $chartConfig.appSetName }}-{{`{{ .values.addonChartVersion }}`}}'
       {{- else }}
-      name: '{{$appNamePrefix}}{{`{{ .name | trunc 30 }}`}}-{{ $nameNormalize | trunc 20 }}-{{`{{ .values.addonChartVersion }}`}}'
+      name: '{{$releaseName}}-{{`{{ .name | trunc 30 }}`}}-{{ $nameNormalize | trunc 20 }}-{{`{{ .values.addonChartVersion }}`}}'
       {{- end }}
       annotations:
         {{- include "application-sets.annotations" $ | nindent 8 }}
