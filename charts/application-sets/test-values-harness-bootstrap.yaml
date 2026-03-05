@@ -8,7 +8,7 @@ repoURLGitRevision: "main"
 repoURLGitBasePath: ""
 valueFiles: []
 namespace: gitops-agent
-argoProjectName: default
+argoProjectName: 2bb79a64
 syncPolicy:
   automated:
     selfHeal: true
