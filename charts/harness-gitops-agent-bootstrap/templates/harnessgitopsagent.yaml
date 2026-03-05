@@ -1,0 +1,52 @@
+{{- if .Values.harnessAgent.enabled }}
+{{- $identity := .Values.gitopsAgent.harness.identity -}}
+{{- $accountId := required "gitopsAgent.harness.identity.accountIdentifier is required" $identity.accountIdentifier -}}
+{{- $orgId := required "gitopsAgent.harness.identity.orgIdentifier is required" $identity.orgIdentifier -}}
+{{- $projectId := required "gitopsAgent.harness.identity.projectIdentifier is required" $identity.projectIdentifier -}}
+{{- $agentIdentifier := required "gitopsAgent.harness.identity.agentIdentifier is required" $identity.agentIdentifier -}}
+{{- $apiKeySecretRef := required "harnessAgent.spec.apiKeySecretRef is required" .Values.harnessAgent.spec.apiKeySecretRef -}}
+{{- $tokenSecretRef := required "harnessAgent.spec.tokenSecretRef is required" .Values.harnessAgent.spec.tokenSecretRef -}}
+{{- $gitopsAgentTokenSecretRef := required "gitopsAgent.agent.existingSecrets.agentToken is required" .Values.gitopsAgent.agent.existingSecrets.agentToken -}}
+{{- if ne $tokenSecretRef $gitopsAgentTokenSecretRef -}}
+{{- fail "harnessAgent.spec.tokenSecretRef must match gitopsAgent.agent.existingSecrets.agentToken" -}}
+{{- end }}
+apiVersion: infrastructure.kandylis.co.uk/v1
+kind: HarnessGitopsAgent
+metadata:
+  name: {{ default $agentIdentifier .Values.harnessAgent.metadata.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "harness-gitops-agent-bootstrap.labels" . | nindent 4 }}
+    {{- with .Values.harnessAgent.metadata.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.harnessAgent.metadata.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  name: {{ default $agentIdentifier .Values.harnessAgent.spec.name | quote }}
+  identifier: {{ $agentIdentifier | quote }}
+  accountId: {{ $accountId | quote }}
+  orgId: {{ $orgId | quote }}
+  projectId: {{ $projectId | quote }}
+  operator: {{ .Values.harnessAgent.spec.operator | quote }}
+  scope: {{ .Values.harnessAgent.spec.scope | quote }}
+  type: {{ .Values.harnessAgent.spec.type | quote }}
+  apiKeySecretRef: {{ $apiKeySecretRef | quote }}
+  tokenSecretRef: {{ $tokenSecretRef | quote }}
+  clusterRegistration:
+    enabled: {{ .Values.harnessAgent.spec.clusterRegistration.enabled }}
+    {{- if .Values.harnessAgent.spec.clusterRegistration.name }}
+    name: {{ .Values.harnessAgent.spec.clusterRegistration.name | quote }}
+    {{- end }}
+    {{- if .Values.harnessAgent.spec.clusterRegistration.server }}
+    server: {{ .Values.harnessAgent.spec.clusterRegistration.server | quote }}
+    {{- end }}
+    {{- if .Values.harnessAgent.spec.clusterRegistration.connectionType }}
+    connectionType: {{ .Values.harnessAgent.spec.clusterRegistration.connectionType | quote }}
+    {{- end }}
+    {{- if .Values.harnessAgent.spec.clusterRegistration.credentialsRef }}
+    credentialsRef: {{ .Values.harnessAgent.spec.clusterRegistration.credentialsRef | quote }}
+    {{- end }}
+{{- end }}

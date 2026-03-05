@@ -1,0 +1,26 @@
+harnessAgent:
+  metadata:
+    name: "hub-agent"
+  spec:
+    apiKeySecretRef: "harness-api-key-secret"
+    tokenSecretRef: "my-agent-token"
+    clusterRegistration:
+      enabled: true
+      name: "hub"
+      connectionType: "IN_CLUSTER"
+
+gitopsAgent:
+  harness:
+    identity:
+      accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
+      orgIdentifier: "Harness_Platform_Management"
+      projectIdentifier: "gitopshub"
+      agentIdentifier: "hubagent"
+    configMap:
+      http:
+        tlsEnabled: false
+        agentHttpTarget: "https://app.harness.io/gitops"
+      logLevel: "info"
+  agent:
+    existingSecrets:
+      agentToken: "my-agent-token"

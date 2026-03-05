@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "harnessAgent": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "annotations": { "type": "object" },
+            "labels": { "type": "object" }
+          }
+        },
+        "spec": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "operator": { "type": "string" },
+            "scope": { "type": "string" },
+            "type": { "type": "string" },
+            "apiKeySecretRef": { "type": "string", "minLength": 1 },
+            "tokenSecretRef": { "type": "string", "minLength": 1 },
+            "clusterRegistration": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "name": { "type": "string" },
+                "server": { "type": "string" },
+                "connectionType": { "type": "string", "enum": ["IN_CLUSTER", "SERVICE_ACCOUNT"] },
+                "credentialsRef": { "type": "string" }
+              },
+              "required": ["enabled"]
+            }
+          },
+          "required": ["apiKeySecretRef", "tokenSecretRef"]
+        }
+      },
+      "required": ["enabled", "spec"]
+    },
+    "gitopsAgent": {
+      "type": "object",
+      "properties": {
+        "harness": {
+          "type": "object",
+          "properties": {
+            "identity": {
+              "type": "object",
+              "properties": {
+                "accountIdentifier": { "type": "string" },
+                "orgIdentifier": { "type": "string" },
+                "projectIdentifier": { "type": "string" },
+                "agentIdentifier": { "type": "string" }
+              }
+            }
+          },
+          "required": ["identity"]
+        },
+        "agent": {
+          "type": "object",
+          "properties": {
+            "existingSecrets": {
+              "type": "object",
+              "properties": {
+                "agentToken": { "type": "string", "minLength": 1 }
+              },
+              "required": ["agentToken"]
+            }
+          },
+          "required": ["existingSecrets"]
+        }
+      },
+      "required": ["harness", "agent"]
+    }
+  },
+  "required": ["harnessAgent", "gitopsAgent"]
+}

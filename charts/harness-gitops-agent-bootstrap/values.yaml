@@ -1,0 +1,86 @@
+nameOverride: ""
+fullnameOverride: ""
+
+harnessAgent:
+  enabled: true
+  metadata:
+    name: ""
+    annotations: {}
+    labels: {}
+  spec:
+    # Optional display name in Harness. Defaults to gitopsAgent.harness.identity.agentIdentifier.
+    name: ""
+    operator: "ARGO"
+    scope: "PROJECT"
+    type: "MANAGED_ARGO_PROVIDER"
+    # Secret in release namespace that contains key: api_key
+    apiKeySecretRef: "harness-api-key-secret"
+    # Secret created by controller containing GITOPS_AGENT_TOKEN.
+    # Must match gitopsAgent.agent.existingSecrets.agentToken.
+    tokenSecretRef: "my-agent-token"
+    clusterRegistration:
+      enabled: true
+      name: ""
+      server: "https://kubernetes.default.svc"
+      connectionType: "IN_CLUSTER"
+      credentialsRef: ""
+
+# Values passed to harness/gitops-helm dependency (aliased as gitopsAgent).
+gitopsAgent:
+  argo-cd:
+    enabled: true
+
+  harness:
+    identity:
+      accountIdentifier: ""
+      orgIdentifier: ""
+      projectIdentifier: ""
+      agentIdentifier: ""
+    configMap:
+      http:
+        tlsEnabled: false
+        agentHttpTarget: "https://app.harness.io/gitops"
+      logLevel: "info"
+    createClusterRoles: true
+    networkPolicy:
+      create: true
+
+  agent:
+    existingSecrets:
+      # Must match harnessAgent.spec.tokenSecretRef
+      agentToken: "my-agent-token"
+    replicas: 1
+    highAvailability: false
+    serviceAccount:
+      create: true
+      name: gitops-agent
+      automountServiceAccountToken: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+      limits:
+        cpu: "1"
+        memory: "512Mi"
+    image:
+      repository: harness/gitops-agent
+      tag: v0.84.1
+      imagePullPolicy: IfNotPresent
+    pdb:
+      enabled: false
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: false
+
+  upgrader:
+    enabled: false

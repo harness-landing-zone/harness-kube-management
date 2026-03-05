@@ -1,0 +1,77 @@
+harness-agent-bootstrap:
+  enabled: true
+  namespace: gitops-agent
+  releaseName: harness-agent-bootstrap
+  chartName: harness-gitops-agent-bootstrap
+  defaultVersion: "0.1.0"
+  path: "charts/harness-gitops-agent-bootstrap"
+  annotationsApp:
+    argocd.argoproj.io/sync-wave: "20"
+  selector:
+    matchExpressions:
+      - key: enable_agent
+        operator: In
+        values: ["true"]
+  valuesObject:
+    harnessAgent:
+      metadata:
+        name: '{{.name}}-agent'
+      spec:
+        name: '{{.name}}-agent'
+        operator: "ARGO"
+        scope: "PROJECT"
+        type: "MANAGED_ARGO_PROVIDER"
+        apiKeySecretRef: '{{default "harness-api-key-secret" (index .metadata.annotations "harness_api_key_secret_ref")}}'
+        tokenSecretRef: '{{default "my-agent-token" (index .metadata.annotations "harness_token_secret_ref")}}'
+        clusterRegistration:
+          enabled: true
+          name: '{{.name}}'
+          connectionType: "IN_CLUSTER"
+    gitopsAgent:
+      harness:
+        identity:
+          accountIdentifier: '{{default "qIYsos1ZQO6fJMG1Ip6KJA" (index .metadata.annotations "harness_account_id")}}'
+          orgIdentifier: '{{default "Harness_Platform_Management" (index .metadata.annotations "harness_org_id")}}'
+          projectIdentifier: '{{default "gitopshub" (index .metadata.annotations "harness_project_id")}}'
+          agentIdentifier: '{{default .name (index .metadata.annotations "harness_agent_identifier")}}'
+        configMap:
+          http:
+            tlsEnabled: false
+            agentHttpTarget: "https://app.harness.io/gitops"
+          logLevel: "info"
+      agent:
+        existingSecrets:
+          agentToken: '{{default "my-agent-token" (index .metadata.annotations "harness_token_secret_ref")}}'
+
+namespace: gitops-agent
+argoProjectName: default
+useSelectors: "true"
+globalValuesObject:
+  commonLabels:
+    app.kubernetes.io/part-of: "harness-kube-management"
+    managed-by: "harness-kube-management"
+  commonAnnotations:
+    managed-by: "harness-kube-management"
+
+repoURLGit: "https://github.com/markoskandylis/harness-kube-management.git"
+repoURLGitRevision: "main"
+repoURLGitBasePath: ""
+valueFiles: []
+
+syncPolicy:
+  automated:
+    selfHeal: true
+    allowEmpty: true
+    prune: true
+  retry:
+    limit: -1
+    backoff:
+      duration: 5s
+      factor: 2
+      maxDuration: 10m
+  syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+
+syncPolicyAppSet:
+  preserveResourcesOnDeletion: true

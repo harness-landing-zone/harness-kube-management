@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harness-bootstrap
+  namespace: gitops-agent
+spec:
+  project: 2bb79a64
+  source:
+    repoURL: https://github.com/markoskandylis/harness-kube-management.git
+    targetRevision: main
+    path: charts/application-sets
+    helm:
+      valueFiles:
+        - values/harness-bootstrap.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gitops-agent
+  syncPolicy:
+    automated:
+      selfHeal: true
+      allowEmpty: true
+      prune: false
+    retry:
+      limit: 100
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

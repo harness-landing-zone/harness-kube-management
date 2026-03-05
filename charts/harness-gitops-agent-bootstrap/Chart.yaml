@@ -1,0 +1,21 @@
+apiVersion: v2
+name: harness-gitops-agent-bootstrap
+description: Creates a HarnessGitopsAgent CR and installs Harness gitops-helm in one release
+type: application
+version: 0.1.0
+appVersion: "1.2.0"
+kubeVersion: ">=1.25.0-0"
+keywords:
+  - harness
+  - gitops
+  - argo-cd
+  - bootstrap
+home: https://github.com/markoskandylis/harness-gitops-agent-operator
+sources:
+  - https://github.com/markoskandylis/harness-gitops-agent-operator
+  - https://github.com/harness/gitops-helm
+dependencies:
+  - name: gitops-helm
+    alias: gitopsAgent
+    version: "1.2.0"
+    repository: "https://harness.github.io/gitops-helm/"
