@@ -1,27 +1,49 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: harness-bootstrap
+  name: cluster-addons
   namespace: gitops-agent
 spec:
-  project: 2bb79a64
-  source:
-    repoURL: https://github.com/markoskandylis/harness-kube-management.git
-    targetRevision: main
-    path: charts/application-sets
-    helm:
-      valueFiles:
-        - values/harness-bootstrap.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: gitops-agent
   syncPolicy:
-    automated:
-      selfHeal: true
-      allowEmpty: true
-      prune: false
-    retry:
-      limit: 100
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          fleet_member: hub-cluster
+      values:
+        addonChart: application-sets
+  template:
+    metadata:
+      name: cluster-addons
+    spec:
+      project: 2bb79a64
+      sources:
+      - ref: values
+        repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+        targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+      - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+        path: 'charts/{{.values.addonChart}}'
+        targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+        helm:
+          ignoreMissingValueFiles: true
+          valuesObject:
+            agentTokenSecretName: my-agent-token
+          valueFiles:
+            - $values/charts/application-sets/test-values-harness-bootstrap.yaml
+      destination:
+        namespace: gitops-agent
+        name: '{{.name}}'
+      syncPolicy:
+        automated:
+          selfHeal: false
+          allowEmpty: true
+          prune: false
+        retry:
+          limit: 100
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

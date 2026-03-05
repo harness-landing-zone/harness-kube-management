@@ -6,7 +6,6 @@ globalValuesObject:
     team: "platform"
   commonAnnotations:
     managed-by: "harness-kube-management"
-
 syncPolicy:
   automated:
     selfHeal: false
