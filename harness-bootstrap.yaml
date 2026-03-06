@@ -20,7 +20,7 @@ spec:
     metadata:
       name: gitops-agent
     spec:
-      project: 2bb79a64
+      project: default
       sources:
       - ref: values
         repoURL: '{{.metadata.annotations.fleet_repo_url}}'

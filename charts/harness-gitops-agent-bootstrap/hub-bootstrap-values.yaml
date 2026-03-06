@@ -1,21 +1,32 @@
 harnessAgent:
+  enabled: true
   metadata:
-    name: "hub-agent"
+    name: "hub-agent-v2"
   spec:
+    name: "hub-agent-v2"
+    operator: "ARGO"
+    scope: "ORG"
+    type: "MANAGED_ARGO_PROVIDER"
+    # Project used only for AppProject mapping.
+    projectId: "gitopshub"
     apiKeySecretRef: "harness-api-key-secret"
-    tokenSecretRef: "my-agent-token"
+    tokenSecretRef: "my-agent-token-v2"
+    # Existing in-cluster Argo AppProject name to map to Harness project gitopshub.
+    argoProjectName: "default"
     clusterRegistration:
       enabled: true
-      name: "spoke"
+      name: "hub-v2"
       connectionType: "IN_CLUSTER"
 
 gitopsAgent:
   harness:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
-      orgIdentifier: "latform_team"
-      projectIdentifier: "Gitops"
-      agentIdentifier: "hubagent"
+      orgIdentifier: "Harness_Platform_Management"
+      # Keep empty for ORG-scope runtime registration.
+      projectIdentifier: ""
+      # Keep unprefixed; controller adds org./account. prefixes for API-path calls.
+      agentIdentifier: "hubagentv2"
     configMap:
       http:
         tlsEnabled: false
@@ -23,4 +34,21 @@ gitopsAgent:
       logLevel: "info"
   agent:
     existingSecrets:
-      agentToken: "my-agent-token"
+      agentToken: "my-agent-token-v2"
+  argo-cd:
+    configs:
+      clusterCredentials:
+        hubv2:
+          server: "https://kubernetes.default.svc"
+          config:
+            tlsClientConfig:
+              insecure: true
+          labels:
+            argocd.argoproj.io/secret-type: cluster
+            enable_agent: "false"
+          annotations:
+            harness_account_id: "qIYsos1ZQO6fJMG1Ip6KJA"
+            harness_org_id: "Harness_Platform_Management"
+            harness_agent_identifier: "hubagentv2"
+            harness_api_key_secret_ref: "harness-api-key-secret"
+            harness_token_secret_ref: "my-agent-token-v2"

@@ -21,6 +21,9 @@
             "operator": { "type": "string" },
             "scope": { "type": "string" },
             "type": { "type": "string" },
+            "projectId": { "type": "string" },
+            "argoProjectName": { "type": "string" },
+            "existingAgentIdentifier": { "type": "string" },
             "apiKeySecretRef": { "type": "string", "minLength": 1 },
             "tokenSecretRef": { "type": "string", "minLength": 1 },
             "clusterRegistration": {

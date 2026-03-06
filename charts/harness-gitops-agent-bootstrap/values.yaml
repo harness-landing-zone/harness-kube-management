@@ -13,6 +13,14 @@ harnessAgent:
     operator: "ARGO"
     scope: "PROJECT"
     type: "MANAGED_ARGO_PROVIDER"
+    # Optional Harness project used by mapping logic in the HarnessGitopsAgent CR.
+    # For ORG/ACCOUNT scope, set this and leave gitopsAgent.harness.identity.projectIdentifier empty.
+    projectId: ""
+    # Optional existing in-cluster Argo AppProject name to map for ORG/ACCOUNT scope.
+    # Required when scope is ORG/ACCOUNT and a project ID is set for mapping.
+    argoProjectName: ""
+    # Optional: reuse an existing Harness agent instead of creating a new one.
+    existingAgentIdentifier: ""
     # Secret in release namespace that contains key: api_key
     apiKeySecretRef: "harness-api-key-secret"
     # Secret created by controller containing GITOPS_AGENT_TOKEN.
@@ -47,7 +55,11 @@ gitopsAgent:
     identity:
       accountIdentifier: ""
       orgIdentifier: ""
+      # Runtime gitops-agent scope. Keep empty for ORG/ACCOUNT agents so the runtime does
+      # not force project-scoped registration.
       projectIdentifier: ""
+      # Keep this unprefixed (for example "hubagent"). The controller handles
+      # scope-specific API path prefixes ("org." / "account.") automatically.
       agentIdentifier: ""
     configMap:
       http:

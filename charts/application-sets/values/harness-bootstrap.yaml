@@ -15,7 +15,7 @@ harness-agent-controller:
   valuesObject:
     image:
       repository: '{{default "mkandylis/harness-gitops-agent-operator" (index .metadata.annotations "harness_controller_image_repository")}}'
-      tag: '{{default "dev" (index .metadata.annotations "harness_controller_image_tag")}}'
+      tag: '{{default "dev-2" (index .metadata.annotations "harness_controller_image_tag")}}'
     manager:
       zapDevelopment: false
 

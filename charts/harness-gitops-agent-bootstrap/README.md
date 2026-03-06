@@ -49,3 +49,9 @@ helm upgrade --install hub-bootstrap chart/harness-gitops-agent-bootstrap \
 
 - Keep `harnessAgent.spec.tokenSecretRef` and `gitopsAgent.agent.existingSecrets.agentToken` identical.
 - Do not use `--wait` on first install; the controller needs time to create the token secret.
+- For ORG/ACCOUNT scope project mapping, set:
+  - `harnessAgent.spec.scope` to `ORG` or `ACCOUNT`
+  - `harnessAgent.spec.projectId` to the Harness project (for example `gitopshub`)
+  - `harnessAgent.spec.argoProjectName` to the in-cluster Argo AppProject to map
+  - keep `gitopsAgent.harness.identity.projectIdentifier` empty so runtime registration stays ORG/ACCOUNT-scoped
+- Keep `gitopsAgent.harness.identity.agentIdentifier` unprefixed (for example `hubagent`).
