@@ -47,6 +47,8 @@ gitopsAgent:
             argocd.argoproj.io/secret-type: cluster
             enable_agent: "false"
           annotations:
+            fleet_repo_url}: "https://github.com/harness-landing-zone/harness-kube-management"
+            fleet_repo_revision: "main"
             harness_account_id: "qIYsos1ZQO6fJMG1Ip6KJA"
             harness_org_id: "Harness_Platform_Management"
             harness_agent_identifier: "hubagentv2"
