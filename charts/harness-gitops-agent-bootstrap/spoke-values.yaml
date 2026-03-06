@@ -1,0 +1,27 @@
+harnessAgent:
+  enabled: true
+  metadata:
+    name: "hub-agent-v2-map-argo-spoke"
+  spec:
+    name: "hub-agent-v2-map-argo-spoke"
+    operator: "ARGO"
+    scope: "ORG"
+    type: "MANAGED_ARGO_PROVIDER"
+    projectId: "argospoke"
+    argoProjectName: "argo-spoke"
+    existingAgentIdentifier: "org.hubagentv2"
+    apiKeySecretRef: "harness-api-key-secret"
+    tokenSecretRef: "my-agent-token-v2"
+    clusterRegistration:
+      enabled: false
+
+gitopsAgent:
+  harness:
+    identity:
+      accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
+      orgIdentifier: "Harness_Platform_Management"
+      projectIdentifier: ""
+      agentIdentifier: "hubagentv2"
+  agent:
+    existingSecrets:
+      agentToken: "my-agent-token-v2"
