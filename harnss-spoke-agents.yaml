@@ -1,0 +1,118 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: spoke-agents
+  namespace: gitops-agent
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          fleet_member: hub-cluster
+      values:
+        addonChart: application-sets
+  template:
+    metadata:
+      name: gitops-agent
+    spec:
+      project: default
+      sources:
+      - ref: values
+        repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+        targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+      - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+        path: 'charts/{{.values.addonChart}}'
+        targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+        helm:
+          ignoreMissingValueFiles: true
+          valueFiles:
+            - $values/charts/application-sets/test-values-harness-bootstrap.yaml
+      destination:
+        namespace: gitops-agent
+        name: '{{.name}}'
+      syncPolicy:
+        automated:
+          selfHeal: false
+          allowEmpty: true
+          prune: false
+        retry:
+          limit: 100
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: spoke-agent-definitions
+  namespace: gitops-agent
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
+  generators:
+  - git:
+      repoURL: "https://github.com/markoskandylis/harness-kube-management.git"
+      revision: "main"
+      files:
+      - path: "fleet-bootsrap/*.yaml"
+  template:
+    metadata:
+      name: 'spoke-agent-{{.path.basenameNormalized}}'
+    spec:
+      project: default
+      sources:
+      - repoURL: "https://github.com/markoskandylis/harness-kube-management.git"
+        path: "charts/harness-gitops-agent-bootstrap"
+        targetRevision: "main"
+        helm:
+          releaseName: 'spoke-agent-{{.path.basenameNormalized}}'
+          values: |
+            harnessAgent:
+              enabled: true
+              metadata:
+                name: '{{.agentName}}'
+              spec:
+                name: '{{.agentName}}'
+                operator: "ARGO"
+                scope: "PROJECT"
+                type: "MANAGED_ARGO_PROVIDER"
+                projectId: '{{.projectId}}'
+                apiKeySecretRef: '{{.apiKeySecretRef}}'
+                tokenSecretRef: '{{.tokenSecretRef}}'
+                projectMapping:
+                  projectId: '{{.projectId}}'
+                  AppProject: '{{.appProject}}'
+            appProject:
+              enabled: false
+            gitopsAgent:
+              enabled: false
+              harness:
+                identity:
+                  accountIdentifier: '{{.accountId}}'
+                  orgIdentifier: '{{.orgId}}'
+                  projectIdentifier: '{{.projectId}}'
+                  agentIdentifier: '{{.agentIdentifier}}'
+              agent:
+                existingSecrets:
+                  agentToken: '{{.tokenSecretRef}}'
+      destination:
+        namespace: gitops-agent
+        name: hubv2
+      syncPolicy:
+        automated:
+          selfHeal: true
+          allowEmpty: true
+          prune: true
+        retry:
+          limit: 100
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

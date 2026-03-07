@@ -20,7 +20,7 @@ harness-agent-controller:
       zapDevelopment: false
 
 harness-agent-bootstrap:
-  enabled: false
+  enabled: true
   namespace: gitops-agent
   releaseName: harness-agent-bootstrap
   chartName: harness-gitops-agent-bootstrap
