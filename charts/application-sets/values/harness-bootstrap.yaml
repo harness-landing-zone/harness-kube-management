@@ -19,6 +19,7 @@ harness-agent-controller:
     manager:
       zapDevelopment: false
 
+
 harness-agent-bootstrap:
   enabled: true
   namespace: gitops-agent
