@@ -10,16 +10,23 @@
 {{- end -}}
 {{- $identityProjectId := default "" $identity.projectIdentifier -}}
 {{- $specProjectId := default "" .Values.harnessAgent.spec.projectId -}}
-{{- $resolvedProjectId := trim (coalesce $specProjectId $identityProjectId) -}}
+{{- $resolvedProjectId := trim $specProjectId -}}
+{{- if eq $resolvedProjectId "" -}}
+{{- $resolvedProjectId = trim $identityProjectId -}}
+{{- end -}}
 {{- $projectId := "" -}}
 {{- if eq $scope "PROJECT" -}}
 {{- $projectId = required "projectId is required for PROJECT scope (set harnessAgent.spec.projectId or gitopsAgent.harness.identity.projectIdentifier)" $resolvedProjectId -}}
 {{- else -}}
 {{- $projectId = $resolvedProjectId -}}
 {{- end -}}
-{{- $argoProjectName := default "" .Values.harnessAgent.spec.argoProjectName -}}
-{{- if and (or (eq $scope "ORG") (eq $scope "ACCOUNT")) $projectId (eq (trim $argoProjectName) "") -}}
-{{- fail "harnessAgent.spec.argoProjectName is required when scope is ORG or ACCOUNT and a mapping projectId is set" -}}
+{{- $mappingProjectId := trim (default "" .Values.harnessAgent.spec.projectMapping.projectId) -}}
+{{- $mappingAppProject := trim (default "" .Values.harnessAgent.spec.projectMapping.AppProject) -}}
+{{- $hasProjectMapping := or (ne $mappingProjectId "") (ne $mappingAppProject "") -}}
+{{- if $hasProjectMapping -}}
+{{- if or (eq $mappingProjectId "") (eq $mappingAppProject "") -}}
+{{- fail "both harnessAgent.spec.projectMapping.projectId and harnessAgent.spec.projectMapping.AppProject are required when projectMapping is set" -}}
+{{- end -}}
 {{- end -}}
 {{- $agentIdentifier := required "gitopsAgent.harness.identity.agentIdentifier is required" $identity.agentIdentifier -}}
 {{- $apiKeySecretRef := required "harnessAgent.spec.apiKeySecretRef is required" .Values.harnessAgent.spec.apiKeySecretRef -}}
@@ -60,29 +67,9 @@ spec:
   {{- if .Values.harnessAgent.spec.existingAgentIdentifier }}
   existingAgentIdentifier: {{ .Values.harnessAgent.spec.existingAgentIdentifier | quote }}
   {{- end }}
-  {{- if $argoProjectName }}
-  argoProjectName: {{ $argoProjectName | quote }}
+  {{- if $hasProjectMapping }}
+  projectMapping:
+    projectId: {{ $mappingProjectId | quote }}
+    AppProject: {{ $mappingAppProject | quote }}
   {{- end }}
-  clusterRegistration:
-    enabled: {{ .Values.harnessAgent.spec.clusterRegistration.enabled }}
-    {{- if .Values.harnessAgent.spec.clusterRegistration.name }}
-    name: {{ .Values.harnessAgent.spec.clusterRegistration.name | quote }}
-    {{- end }}
-    {{- if .Values.harnessAgent.spec.clusterRegistration.server }}
-    server: {{ .Values.harnessAgent.spec.clusterRegistration.server | quote }}
-    {{- end }}
-    {{- if .Values.harnessAgent.spec.clusterRegistration.connectionType }}
-    connectionType: {{ .Values.harnessAgent.spec.clusterRegistration.connectionType | quote }}
-    {{- end }}
-    {{- if .Values.harnessAgent.spec.clusterRegistration.credentialsRef }}
-    credentialsRef: {{ .Values.harnessAgent.spec.clusterRegistration.credentialsRef | quote }}
-    {{- end }}
-{{- with .Values.harnessAgent.spec.clusterSecretPatch }}
-  clusterSecretPatch:
-    name: {{ required "harnessAgent.spec.clusterSecretPatch.name is required" .name | quote }}
-    {{- if .namespace }}
-    namespace: {{ .namespace | quote }}
-    {{- end }}
-    enableAgent: {{ default "false" .enableAgent | quote }}
-{{- end }}
 {{- end }}

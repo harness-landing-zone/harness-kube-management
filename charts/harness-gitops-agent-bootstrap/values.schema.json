@@ -22,30 +22,38 @@
             "scope": { "type": "string" },
             "type": { "type": "string" },
             "projectId": { "type": "string" },
-            "argoProjectName": { "type": "string" },
-            "existingAgentIdentifier": { "type": "string" },
-            "apiKeySecretRef": { "type": "string", "minLength": 1 },
-            "tokenSecretRef": { "type": "string", "minLength": 1 },
-            "clusterRegistration": {
+            "projectMapping": {
               "type": "object",
               "properties": {
-                "enabled": { "type": "boolean" },
-                "name": { "type": "string" },
-                "server": { "type": "string" },
-                "connectionType": { "type": "string", "enum": ["IN_CLUSTER", "SERVICE_ACCOUNT"] },
-                "credentialsRef": { "type": "string" }
-              },
-              "required": ["enabled"]
-            }
+                "projectId": { "type": "string" },
+                "AppProject": { "type": "string" }
+              }
+            },
+            "existingAgentIdentifier": { "type": "string" },
+            "apiKeySecretRef": { "type": "string", "minLength": 1 },
+            "tokenSecretRef": { "type": "string", "minLength": 1 }
           },
           "required": ["apiKeySecretRef", "tokenSecretRef"]
         }
       },
       "required": ["enabled", "spec"]
     },
+    "appProject": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "name": { "type": "string" },
+        "namespace": { "type": "string" },
+        "description": { "type": "string" },
+        "annotations": { "type": "object" },
+        "labels": { "type": "object" }
+      },
+      "required": ["enabled"]
+    },
     "gitopsAgent": {
       "type": "object",
       "properties": {
+        "enabled": { "type": "boolean" },
         "harness": {
           "type": "object",
           "properties": {
@@ -78,5 +86,5 @@
       "required": ["harness", "agent"]
     }
   },
-  "required": ["harnessAgent", "gitopsAgent"]
+  "required": ["harnessAgent", "appProject", "gitopsAgent"]
 }

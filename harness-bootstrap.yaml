@@ -30,8 +30,6 @@ spec:
         targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
         helm:
           ignoreMissingValueFiles: true
-          valuesObject:
-            agentTokenSecretName: my-agent-token
           valueFiles:
             - $values/charts/application-sets/test-values-harness-bootstrap.yaml
       destination:

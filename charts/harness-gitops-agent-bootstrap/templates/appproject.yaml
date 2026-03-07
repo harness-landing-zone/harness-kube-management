@@ -1,0 +1,29 @@
+{{- if and .Values.appProject.enabled .Values.gitopsAgent.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ default "default" .Values.appProject.name | quote }}
+  namespace: {{ default .Release.Namespace .Values.appProject.namespace | quote }}
+  labels:
+    {{- include "harness-gitops-agent-bootstrap.labels" . | nindent 4 }}
+    {{- with .Values.appProject.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.appProject.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  description: {{ default "Bootstrap AppProject created by harness-gitops-agent-bootstrap" .Values.appProject.description | quote }}
+  sourceRepos:
+    - "*"
+  destinations:
+    - namespace: "*"
+      server: "*"
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+{{- end }}

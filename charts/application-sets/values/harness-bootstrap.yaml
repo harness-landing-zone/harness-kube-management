@@ -9,13 +9,13 @@ harness-agent-controller:
     argocd.argoproj.io/sync-wave: "10"
   selector:
     matchExpressions:
-      - key: enable_agent
+      - key: enable_controller
         operator: In
         values: ["true"]
   valuesObject:
     image:
       repository: '{{default "mkandylis/harness-gitops-agent-operator" (index .metadata.annotations "harness_controller_image_repository")}}'
-      tag: '{{default "dev-2" (index .metadata.annotations "harness_controller_image_tag")}}'
+      tag: '{{default "dev-13" (index .metadata.annotations "harness_controller_image_tag")}}'
     manager:
       zapDevelopment: false
 
@@ -43,12 +43,15 @@ harness-agent-bootstrap:
         scope: "PROJECT"
         type: "MANAGED_ARGO_PROVIDER"
         apiKeySecretRef: '{{default "harness-api-key-secret" (index .metadata.annotations "harness_api_key_secret_ref")}}'
-        tokenSecretRef: '{{default "my-agent-token" (index .metadata.annotations "harness_token_secret_ref")}}'
-        clusterRegistration:
-          enabled: true
-          name: '{{.name}}'
-          connectionType: "IN_CLUSTER"
+        tokenSecretRef: '{{default (printf "%s-agent-token" .name) (index .metadata.annotations "harness_token_secret_ref")}}'
+        projectMapping:
+          projectId: '{{default "gitopshub" (index .metadata.annotations "harness_project_id")}}'
+          AppProject: '{{default "default" (index .metadata.annotations "harness_app_project")}}'
+    appProject:
+      enabled: true
+      name: '{{default "default" (index .metadata.annotations "harness_app_project")}}'
     gitopsAgent:
+      enabled: true
       harness:
         identity:
           accountIdentifier: '{{default "qIYsos1ZQO6fJMG1Ip6KJA" (index .metadata.annotations "harness_account_id")}}'
@@ -62,37 +65,5 @@ harness-agent-bootstrap:
           logLevel: "info"
       agent:
         existingSecrets:
-          agentToken: '{{default "my-agent-token" (index .metadata.annotations "harness_token_secret_ref")}}'
+          agentToken: '{{default (printf "%s-agent-token" .name) (index .metadata.annotations "harness_token_secret_ref")}}'
 
-namespace: gitops-agent
-argoProjectName: default
-useSelectors: "true"
-globalValuesObject:
-  commonLabels:
-    app.kubernetes.io/part-of: "harness-kube-management"
-    managed-by: "harness-kube-management"
-  commonAnnotations:
-    managed-by: "harness-kube-management"
-
-repoURLGit: "https://github.com/markoskandylis/harness-kube-management.git"
-repoURLGitRevision: "main"
-repoURLGitBasePath: ""
-valueFiles: []
-
-syncPolicy:
-  automated:
-    selfHeal: true
-    allowEmpty: true
-    prune: true
-  retry:
-    limit: -1
-    backoff:
-      duration: 5s
-      factor: 2
-      maxDuration: 10m
-  syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
-
-syncPolicyAppSet:
-  preserveResourcesOnDeletion: true

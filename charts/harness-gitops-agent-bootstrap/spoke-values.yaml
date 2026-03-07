@@ -7,13 +7,12 @@ harnessAgent:
     operator: "ARGO"
     scope: "ORG"
     type: "MANAGED_ARGO_PROVIDER"
-    projectId: "argospoke"
-    argoProjectName: "argo-spoke"
     existingAgentIdentifier: "org.hubagentv2"
     apiKeySecretRef: "harness-api-key-secret"
     tokenSecretRef: "my-agent-token-v2"
-    clusterRegistration:
-      enabled: false
+    projectMapping:
+      projectId: "argospoke"
+      AppProject: "argo-spoke"
 
 gitopsAgent:
   harness:

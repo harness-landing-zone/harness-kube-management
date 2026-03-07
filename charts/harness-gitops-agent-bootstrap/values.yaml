@@ -13,12 +13,13 @@ harnessAgent:
     operator: "ARGO"
     scope: "PROJECT"
     type: "MANAGED_ARGO_PROVIDER"
-    # Optional Harness project used by mapping logic in the HarnessGitopsAgent CR.
-    # For ORG/ACCOUNT scope, set this and leave gitopsAgent.harness.identity.projectIdentifier empty.
+    # Optional Harness project for PROJECT-scope agent registration.
     projectId: ""
-    # Optional existing in-cluster Argo AppProject name to map for ORG/ACCOUNT scope.
-    # Required when scope is ORG/ACCOUNT and a project ID is set for mapping.
-    argoProjectName: ""
+    # Optional explicit mapping input.
+    # When set, both fields are required and used for AppProject mapping API calls.
+    projectMapping:
+      projectId: ""
+      AppProject: ""
     # Optional: reuse an existing Harness agent instead of creating a new one.
     existingAgentIdentifier: ""
     # Secret in release namespace that contains key: api_key
@@ -26,15 +27,23 @@ harnessAgent:
     # Secret created by controller containing GITOPS_AGENT_TOKEN.
     # Must match gitopsAgent.agent.existingSecrets.agentToken.
     tokenSecretRef: "my-agent-token"
-    clusterRegistration:
-      enabled: true
-      name: ""
-      server: "https://kubernetes.default.svc"
-      connectionType: "IN_CLUSTER"
-      credentialsRef: ""
+
+# Optional Argo CD AppProject created by this chart.
+# Created only when both appProject.enabled=true and gitopsAgent.enabled=true.
+appProject:
+  enabled: false
+  name: "default"
+  namespace: ""
+  description: "Default bootstrap AppProject"
+  annotations: {}
+  labels: {}
 
 # Values passed to harness/gitops-helm dependency (aliased as gitopsAgent).
 gitopsAgent:
+  # Phase switch:
+  # - false: create/update only HarnessGitopsAgent CR (no runtime subchart)
+  # - true: install/upgrade gitops-helm runtime
+  enabled: true
   argo-cd:
     enabled: true
     repoServer:

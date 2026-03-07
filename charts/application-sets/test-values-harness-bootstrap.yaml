@@ -1,16 +1,32 @@
-mergeValues:
-  harness-bootstrap:
-    use: true
-releaseName: default
-useSelectors: true
+namespace: gitops-agent
+argoProjectName: default
+useSelectors: "true"
+globalValuesObject:
+  commonLabels:
+    app.kubernetes.io/part-of: "harness-kube-management"
+    managed-by: "harness-kube-management"
+  commonAnnotations:
+    managed-by: "harness-kube-management"
+
 repoURLGit: "https://github.com/harness-landing-zone/harness-kube-management"
 repoURLGitRevision: "main"
 repoURLGitBasePath: ""
 valueFiles: []
-namespace: gitops-agent
-argoProjectName: 2bb79a64
+
 syncPolicy:
   automated:
     selfHeal: true
     allowEmpty: true
     prune: true
+  retry:
+    limit: -1
+    backoff:
+      duration: 5s
+      factor: 2
+      maxDuration: 10m
+  syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+
+syncPolicyAppSet:
+  preserveResourcesOnDeletion: true

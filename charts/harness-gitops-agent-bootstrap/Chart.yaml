@@ -19,3 +19,4 @@ dependencies:
     alias: gitopsAgent
     version: "1.2.4"
     repository: "https://harness.github.io/gitops-helm/"
+    condition: gitopsAgent.enabled

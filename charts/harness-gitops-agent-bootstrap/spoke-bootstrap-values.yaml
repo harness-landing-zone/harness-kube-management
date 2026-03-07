@@ -1,18 +1,14 @@
 harnessAgent:
   enabled: true
   metadata:
-    name: "hub-hga"
+    name: "spoke-hga"
   spec:
-    name: "hub-hga"
+    name: "spoke-hga"
     operator: "ARGO"
-    scope: "ORG"
+    scope: "PROJECT"
     type: "MANAGED_ARGO_PROVIDER"
     apiKeySecretRef: "harness-api-key-secret"
-    tokenSecretRef: "my-hga-token"
-    # Optional explicit mapping for ACCOUNT/ORG/PROJECT scope.
-    projectMapping:
-      projectId: "gitopshub"
-      AppProject: "default"
+    tokenSecretRef: "my-spoke-token"
 
 appProject:
   enabled: true

@@ -1,9 +1,10 @@
 # harness-gitops-agent-bootstrap
 
-This chart wires together two lifecycle actions in one release:
+This chart can run in two phases:
 
-1. Creates a `HarnessGitopsAgent` custom resource (consumed by your controller).
-2. Installs Harness `gitops-helm` (which deploys Argo CD + GitOps agent runtime).
+1. Create/update a `HarnessGitopsAgent` custom resource (consumed by your controller).
+2. Install Harness `gitops-helm` (Argo CD + GitOps agent runtime) after the token secret exists.
+3. Optionally create one Argo `AppProject` (for example `default`) in the release namespace.
 
 ## Security model
 
@@ -45,13 +46,45 @@ helm upgrade --install hub-bootstrap chart/harness-gitops-agent-bootstrap \
   --set gitopsAgent.agent.existingSecrets.agentToken=my-agent-token
 ```
 
+## Two-phase install (recommended)
+
+Phase 1: create the Harness agent only (no runtime subchart yet):
+
+```bash
+helm upgrade --install hub-bootstrap chart/harness-gitops-agent-bootstrap \
+  -n argocd-agent \
+  --create-namespace \
+  -f hub-bootstrap-values.yaml \
+  --set gitopsAgent.enabled=false
+```
+
+Wait until the controller creates the token secret:
+
+```bash
+kubectl -n argocd-agent get secret my-agent-token
+```
+
+Phase 2: install runtime chart using the existing token secret:
+
+```bash
+helm upgrade --install hub-bootstrap chart/harness-gitops-agent-bootstrap \
+  -n argocd-agent \
+  -f hub-bootstrap-values.yaml \
+  --set gitopsAgent.enabled=true
+```
+
 ## Notes
 
 - Keep `harnessAgent.spec.tokenSecretRef` and `gitopsAgent.agent.existingSecrets.agentToken` identical.
 - Do not use `--wait` on first install; the controller needs time to create the token secret.
-- For ORG/ACCOUNT scope project mapping, set:
-  - `harnessAgent.spec.scope` to `ORG` or `ACCOUNT`
-  - `harnessAgent.spec.projectId` to the Harness project (for example `gitopshub`)
-  - `harnessAgent.spec.argoProjectName` to the in-cluster Argo AppProject to map
-  - keep `gitopsAgent.harness.identity.projectIdentifier` empty so runtime registration stays ORG/ACCOUNT-scoped
+- To create an in-cluster AppProject with this chart, set:
+  - `appProject.enabled=true`
+  - `appProject.name=default` (or another AppProject name)
+  - AppProject manifest is created only when `gitopsAgent.enabled=true`
+- For explicit project mapping, set:
+  - `harnessAgent.spec.scope` to `ACCOUNT`, `ORG`, or `PROJECT`
+  - `harnessAgent.spec.projectMapping.projectId` to the Harness project (for example `gitopshub`)
+  - `harnessAgent.spec.projectMapping.AppProject` to the in-cluster Argo AppProject to map
+- For ORG/ACCOUNT runtime registration, keep `gitopsAgent.harness.identity.projectIdentifier` empty.
+- Mapping never falls back to `harnessAgent.spec.projectId`; only `projectMapping.projectId` is used for mapping calls.
 - Keep `gitopsAgent.harness.identity.agentIdentifier` unprefixed (for example `hubagent`).
