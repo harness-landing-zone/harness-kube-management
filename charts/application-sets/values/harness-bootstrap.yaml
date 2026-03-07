@@ -54,9 +54,9 @@ harness-agent-bootstrap:
       enabled: true
       harness:
         identity:
-          accountIdentifier: '{{default "qIYsos1ZQO6fJMG1Ip6KJA" (index .metadata.annotations "harness_account_id")}}'
+          accountIdentifier: '{{default "" (index .metadata.annotations "harness_account_id")}}'
           orgIdentifier: '{{default "Harness_Platform_Management" (index .metadata.annotations "harness_org_id")}}'
-          projectIdentifier: '{{default "gitopshub" (index .metadata.annotations "harness_project_id")}}'
+          projectIdentifier: '{{default "" (index .metadata.annotations "harness_project_id")}}'
           agentIdentifier: '{{default .name (index .metadata.annotations "harness_agent_identifier")}}'
         configMap:
           http:
