@@ -26,7 +26,7 @@ harnessAgent:
     apiKeySecretRef: "harness-api-key-secret"
     # Secret created by controller containing GITOPS_AGENT_TOKEN.
     # Must match gitopsAgent.agent.existingSecrets.agentToken.
-    tokenSecretRef: "my-agent-token"
+    tokenSecretRef: ""
 
 # Optional Argo CD AppProject created by this chart.
 # Created only when both appProject.enabled=true and gitopsAgent.enabled=true.
