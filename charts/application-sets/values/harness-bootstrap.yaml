@@ -45,7 +45,7 @@ harness-agent-bootstrap:
         apiKeySecretRef: '{{default "harness-api-key-secret" (index .metadata.annotations "harness_api_key_secret_ref")}}'
         tokenSecretRef: '{{default (printf "%s-agent-token" .name) (index .metadata.annotations "harness_token_secret_ref")}}'
         projectMapping:
-          projectId: '{{default "gitopshub" (index .metadata.annotations "harness_project_id")}}'
+          projectId: '{{default "" (index .metadata.annotations "harness_project_id")}}'
           AppProject: '{{default "default" (index .metadata.annotations "harness_app_project")}}'
     appProject:
       enabled: true
