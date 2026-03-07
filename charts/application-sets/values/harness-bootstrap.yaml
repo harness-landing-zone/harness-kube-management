@@ -1,5 +1,5 @@
 harness-agent-controller:
-  enabled: true
+  enabled: false
   namespace: harness-system
   releaseName: agent-controller
   chartName: harness-gitops-agent-controller
