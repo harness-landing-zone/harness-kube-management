@@ -9,11 +9,11 @@ harnessAgent:
     operator: "ARGO"
     scope: "PROJECT"
     type: "MANAGED_ARGO_PROVIDER"
-    projectId: "argo-spoke-2"
+    projectId: "argospoke2"
     apiKeySecretRef: "harness-api-key-secret"
     tokenSecretRef: "spoke2-token"
     projectMapping:
-      projectId: "argo-spoke-2"
+      projectId: "argospoke2"
       AppProject: "default"
 
 gitopsAgent:
@@ -22,8 +22,8 @@ gitopsAgent:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
       orgIdentifier: "Harness_Platform_Management"
-      projectIdentifier: "argo-spoke-2"
-      agentIdentifier: "spoke-2"
+      projectIdentifier: "argospoke2"
+      agentIdentifier: "spoke2"
   agent:
     existingSecrets:
       agentToken: "spoke2-token"

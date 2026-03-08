@@ -38,7 +38,7 @@ spec:
             valueFiles:
               - $values/fleet-bootstrap/{{.clusterName}}-agent.yaml
       destination:
-        name: '{{.clusterName}}'
+        name: '{{.name}}'
         namespace: gitops-agent
       syncPolicy:
         automated:
