@@ -22,6 +22,9 @@ gitopsAgent:
     crds:
       install: false
       keep: true
+    configs:
+      cm:
+        cluster.inClusterEnabled: "false"
   harness:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
@@ -33,6 +36,8 @@ gitopsAgent:
         tlsEnabled: false
         agentHttpTarget: "https://app.harness.io/gitops"
       logLevel: "info"
+    argocdHarnessPlugin:
+      enabled: false
   agent:
     existingSecrets:
       agentToken: "spoke-2-agent-token"
