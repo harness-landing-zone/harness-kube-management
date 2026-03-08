@@ -31,7 +31,7 @@ spec:
         helm:
           ignoreMissingValueFiles: true
           valueFiles:
-            - $values/charts/application-sets/test-values-harness-bootstrap.yaml
+            - $values/charts/application-sets/harness-bootstrap.yaml
       destination:
         namespace: gitops-agent
         name: '{{.name}}'
