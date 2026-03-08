@@ -40,6 +40,6 @@ valueFiles:
   - '{{if .metadata.labels.tenant}}{{.metadata.labels.tenant}}{{end}}/environments/{{.metadata.labels.environment}}/defaults'
   - '{{if .metadata.labels.tenant}}{{.metadata.labels.tenant}}{{end}}/environments/{{.metadata.labels.environment}}/clusters/{{.name}}'
 mergeValues:
-  fleet-bootstrap:
+  harness-bootstrap:
     use: true
 releaseName: default
