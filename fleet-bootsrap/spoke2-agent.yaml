@@ -1,0 +1,12 @@
+clusterName: spoke-2
+harnessAgent:
+  enabled: true
+  metadata:
+    name: "spoke2-agent"
+  spec:
+    name: "spoke-2-hga"
+    operator: "ARGO"
+    scope: "PROJECT"
+    type: "MANAGED_ARGO_PROVIDER"
+    apiKeySecretRef: "harness-api-key-secret"
+    tokenSecretRef: "spoke2-token"

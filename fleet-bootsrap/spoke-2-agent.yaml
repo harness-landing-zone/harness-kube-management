@@ -1,0 +1,29 @@
+clusterName: spoke-2
+
+harnessAgent:
+  enabled: true
+  metadata:
+    name: "spoke2-agent"
+  spec:
+    name: "spoke-2-hga"
+    operator: "ARGO"
+    scope: "PROJECT"
+    type: "MANAGED_ARGO_PROVIDER"
+    projectId: "argo-spoke-2"
+    apiKeySecretRef: "harness-api-key-secret"
+    tokenSecretRef: "spoke2-token"
+    projectMapping:
+      projectId: "argo-spoke-2"
+      AppProject: "default"
+
+gitopsAgent:
+  enabled: false
+  harness:
+    identity:
+      accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
+      orgIdentifier: "Harness_Platform_Management"
+      projectIdentifier: "argo-spoke-2"
+      agentIdentifier: "spoke-2"
+  agent:
+    existingSecrets:
+      agentToken: "spoke2-token"
