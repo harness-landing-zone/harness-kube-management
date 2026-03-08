@@ -5,6 +5,8 @@ metadata:
   namespace: gitops-agent
 spec:
   goTemplate: true
+  goTemplateOptions:
+    - missingkey=error
   syncPolicy:
     preserveResourcesOnDeletion: false
   generators:
@@ -16,14 +18,20 @@ spec:
                 fleet_member: hub-cluster
             values:
               addonChart: harness-gitops-agent-bootstrap
-        - git:
-            repoURL: '{{.metadata.annotations.fleet_repo_url}}'
-            revision: '{{.metadata.annotations.fleet_repo_revision}}'
-            files:
-              - path: 'fleet-bootstrap/*.yaml'
+        - matrix:
+            generators:
+              - git:
+                  repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+                  revision: '{{.metadata.annotations.fleet_repo_revision}}'
+                  files:
+                    - path: 'fleet-bootstrap/*.yaml'
+              - list:
+                  elements:
+                    - role: cr
+                    - role: runtime
   template:
     metadata:
-      name: 'agent-{{.clusterName}}'
+      name: 'agent-{{.clusterName}}-{{.role}}'
     spec:
       project: default
       sources:
@@ -37,6 +45,11 @@ spec:
             releaseName: '{{.clusterName}}'
             valueFiles:
               - $values/fleet-bootstrap/{{.clusterName}}-agent.yaml
+            valuesObject:
+              harnessAgent:
+                enabled: true
+              gitopsAgent:
+                enabled: false
       destination:
         name: '{{.name}}'
         namespace: gitops-agent
@@ -49,3 +62,23 @@ spec:
           limit: 100
         syncOptions:
           - CreateNamespace=true
+  templatePatch: |
+    {{- if eq .role "runtime" }}
+    spec:
+      destination:
+        name: '{{.clusterName}}'
+      sources:
+        - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+          targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+          ref: values
+        - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+          path: 'charts/{{.values.addonChart}}'
+          targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+          helm:
+            releaseName: '{{.clusterName}}'
+            valueFiles:
+              - $values/fleet-bootstrap/{{.clusterName}}-agent.yaml
+            valuesObject:
+              harnessAgent:
+                enabled: false
+    {{- end }}

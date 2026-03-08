@@ -17,13 +17,18 @@ harnessAgent:
       AppProject: "default"
 
 gitopsAgent:
-  enabled: false
+  enabled: true
   harness:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
       orgIdentifier: "Harness_Platform_Management"
       projectIdentifier: "argospoke2"
       agentIdentifier: "spoke2"
+    configMap:
+      http:
+        tlsEnabled: false
+        agentHttpTarget: "https://app.harness.io/gitops"
+      logLevel: "info"
   agent:
     existingSecrets:
       agentToken: "spoke2-token"
