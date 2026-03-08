@@ -21,7 +21,7 @@ harness-agent-controller:
 
 
 harness-agent-bootstrap:
-  enabled: true
+  enabled: false
   namespace: gitops-agent
   releaseName: harness-agent-bootstrap
   chartName: harness-gitops-agent-bootstrap
