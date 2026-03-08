@@ -20,7 +20,7 @@ spec:
             repoURL: '{{.metadata.annotations.fleet_repo_url}}'
             revision: '{{.metadata.annotations.fleet_repo_revision}}'
             files:
-              - path: '{{.metadata.annotations.fleet_repo_basepath}}fleet-bootstrap/*.yaml'
+              - path: 'fleet-bootstrap/*.yaml'
   template:
     metadata:
       name: 'agent-{{.clusterName}}'
