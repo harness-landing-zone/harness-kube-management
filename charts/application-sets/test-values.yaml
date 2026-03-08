@@ -1,12 +1,12 @@
 # Test values for globalValuesObject functionality
 globalValuesObject:
   commonLabels:
-    app.kubernetes.io/part-of: "harness-kube-management"
-    managed-by: "harness-kube-management"
+    app.kubernetes.io/part-of: "eks-fleet-management"
+    managed-by: "gitops-fleet-management"
     team: "platform"
     global-test: "true"
   commonAnnotations:
-    managed-by: "harness-kube-management"
+    managed-by: "gitops-fleet-management"
     global-annotation: "test-value"
 
 # Enable merging from component files

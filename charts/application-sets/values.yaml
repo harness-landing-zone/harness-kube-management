@@ -1,11 +1,12 @@
 # Common labels to be applied to all ApplicationSet-generated Applications and resources
 globalValuesObject:
   commonLabels:
-    app.kubernetes.io/part-of: "harness-kube-management"
-    managed-by: "harness-kube-management"
+    app.kubernetes.io/part-of: "eks-fleet-management"
+    managed-by: "gitops-fleet-management"
     team: "platform"
   commonAnnotations:
-    managed-by: "harness-kube-management"
+    managed-by: "gitops-fleet-management"
+
 syncPolicy:
   automated:
     selfHeal: false
@@ -25,8 +26,8 @@ syncPolicyAppSet:
 ackPodIdentity:
   path: "charts/pod-identity"
 # If we Define the Merge we will use the values files included in the folder values. That will enable us to have default helm charts
-useSelectors: "true"
-useVersionSelectors: "false"
+useSelectors: "false"
+useVersionSelectors: "true"
 # globalSelectors:
 #   fleet_member: spoke
 #   use_remote_argo: "true"
@@ -38,3 +39,7 @@ valueFiles:
   - '{{if .metadata.labels.tenant}}{{.metadata.labels.tenant}}{{end}}/defaults'
   - '{{if .metadata.labels.tenant}}{{.metadata.labels.tenant}}{{end}}/environments/{{.metadata.labels.environment}}/defaults'
   - '{{if .metadata.labels.tenant}}{{.metadata.labels.tenant}}{{end}}/environments/{{.metadata.labels.environment}}/clusters/{{.name}}'
+mergeValues:
+  fleet-bootstrap:
+    use: true
+releaseName: default
