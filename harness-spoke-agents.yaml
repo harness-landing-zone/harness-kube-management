@@ -31,7 +31,7 @@ spec:
           targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
           ref: values
         - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
-          path: '{{.metadata.annotations.fleet_repo_basepath}}charts/{{.values.addonChart}}'
+          path: 'charts/{{.values.addonChart}}'
           targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
           helm:
             releaseName: '{{.clusterName}}'
