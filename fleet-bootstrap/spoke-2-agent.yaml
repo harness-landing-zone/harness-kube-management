@@ -1,4 +1,5 @@
 clusterName: spoke-2
+deploymentModel: hub-managed
 
 harnessAgent:
   enabled: true
@@ -11,13 +12,17 @@ harnessAgent:
     type: "MANAGED_ARGO_PROVIDER"
     projectId: "argospoke2"
     apiKeySecretRef: "harness-api-key-secret"
-    tokenSecretRef: "spoke2-token"
+    tokenSecretRef: "spoke-2-agent-token"
     projectMapping:
       projectId: "argospoke2"
       AppProject: "default"
 
 gitopsAgent:
   enabled: true
+  argo-cd:
+    crds:
+      install: false
+      keep: true
   harness:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
@@ -31,4 +36,4 @@ gitopsAgent:
       logLevel: "info"
   agent:
     existingSecrets:
-      agentToken: "spoke2-token"
+      agentToken: "spoke-2-agent-token"

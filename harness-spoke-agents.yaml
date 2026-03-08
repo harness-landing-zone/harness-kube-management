@@ -5,8 +5,6 @@ metadata:
   namespace: gitops-agent
 spec:
   goTemplate: true
-  goTemplateOptions:
-    - missingkey=error
   syncPolicy:
     preserveResourcesOnDeletion: false
   generators:
@@ -65,8 +63,15 @@ spec:
   templatePatch: |
     {{- if eq .role "runtime" }}
     spec:
+      {{- if eq .deploymentModel "hub-managed" }}
+      destination:
+        name: '{{.name}}'
+        namespace: 'gitops-agent-{{.clusterName}}'
+      {{- else }}
       destination:
         name: '{{.clusterName}}'
+        namespace: gitops-agent
+      {{- end }}
       sources:
         - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
           targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
