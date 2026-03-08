@@ -1,5 +1,4 @@
 clusterName: spoke-2
-deploymentModel: hub-managed
 
 harnessAgent:
   enabled: true

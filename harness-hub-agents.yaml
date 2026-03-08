@@ -1,0 +1,51 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: harness-hub-agents
+  namespace: gitops-agent
+spec:
+  goTemplate: true
+  syncPolicy:
+    preserveResourcesOnDeletion: false
+  generators:
+  - matrix:
+      generators:
+        - clusters:
+            selector:
+              matchLabels:
+                fleet_member: hub-cluster
+            values:
+              addonChart: harness-gitops-agent-bootstrap
+        - git:
+            repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+            revision: '{{.metadata.annotations.fleet_repo_revision}}'
+            files:
+              - path: 'fleet-bootstrap/hub-managed/*.yaml'
+  template:
+    metadata:
+      name: 'agent-{{.clusterName}}'
+    spec:
+      project: default
+      sources:
+        - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+          targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+          ref: values
+        - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+          path: 'charts/{{.values.addonChart}}'
+          targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+          helm:
+            releaseName: '{{.clusterName}}'
+            valueFiles:
+              - $values/fleet-bootstrap/hub-managed/{{.clusterName}}-agent.yaml
+      destination:
+        name: '{{.name}}'
+        namespace: 'gitops-agent-{{.clusterName}}'
+      syncPolicy:
+        automated:
+          allowEmpty: true
+        retry:
+          backoff:
+            duration: 1m
+          limit: 100
+        syncOptions:
+          - CreateNamespace=true
