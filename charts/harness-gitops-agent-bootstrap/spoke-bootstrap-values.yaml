@@ -31,21 +31,3 @@ gitopsAgent:
   agent:
     existingSecrets:
       agentToken: "my-hga-token"
-  argo-cd:
-    configs:
-      clusterCredentials:
-        hubv2:
-          server: "https://kubernetes.default.svc"
-          config:
-            tlsClientConfig:
-              insecure: true
-          labels:
-            argocd.argoproj.io/secret-type: cluster
-            fleet_member: hub-cluster
-            enable_agent: "false"
-          annotations:
-            fleet_repo_url: "https://github.com/harness-landing-zone/harness-kube-management"
-            fleet_repo_revision: "main"
-            harness_account_id: "qIYsos1ZQO6fJMG1Ip6KJA"
-            harness_org_id: "Harness_Platform_Management"
-            harness_api_key_secret_ref: "harness-api-key-secret"
