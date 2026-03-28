@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: harness-hub-agents
-  namespace: gitops-agent
+  namespace: harness-agent
 spec:
   goTemplate: true
   syncPolicy:
@@ -15,7 +15,7 @@ spec:
               matchLabels:
                 fleet_member: hub-cluster
             values:
-              addonChart: harness-gitops-agent-bootstrap
+              addonChart: harness-harness-agent-bootstrap
         - git:
             repoURL: '{{.metadata.annotations.fleet_repo_url}}'
             revision: '{{.metadata.annotations.fleet_repo_revision}}'
@@ -39,7 +39,7 @@ spec:
               - $values/fleet-bootstrap/hub-managed/{{.clusterName}}-agent.yaml
       destination:
         name: '{{.name}}'
-        namespace: 'gitops-agent-{{.clusterName}}'
+        namespace: 'harness-agent-{{.clusterName}}'
       syncPolicy:
         automated:
           allowEmpty: true

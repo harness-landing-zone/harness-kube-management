@@ -1,32 +1,12 @@
-harnessAgent:
-  enabled: true
-  metadata:
-    name: "hub-hgac"
-  spec:
-    name: "hub-hgac"
-    operator: "ARGO"
-    scope: "ORG"
-    type: "MANAGED_ARGO_PROVIDER"
-    apiKeySecretRef: "harness-api-secret"
-    tokenSecretRef: "hub-hgac-token"
-    # Optional explicit mapping for ACCOUNT/ORG/PROJECT scope.
-    projectMapping:
-      projectId: "gitopsdev"
-      AppProject: "default"
-
-appProject:
-  enabled: true
-  name: "default"
-
 gitopsAgent:
   harness:
     identity:
       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
-      orgIdentifier: "Harness_Platform_Management"
+      orgIdentifier: "gitops_fleet_management"
       # Keep empty for ORG-scope runtime registration.
       projectIdentifier: ""
-      # Keep unprefixed; controller adds org./account. prefixes for API-path calls.
-      agentIdentifier: "hubhgac"
+      # The Agent Identtifiee
+      agentIdentifier: "hub_agent"
     configMap:
       http:
         tlsEnabled: false
@@ -34,7 +14,7 @@ gitopsAgent:
       logLevel: "info"
   agent:
     existingSecrets:
-      agentToken: "hub-hgac-token"
+      agentToken: "hub-agent-token"
   argo-cd:
     configs:
       cm:
@@ -52,4 +32,27 @@ gitopsAgent:
             fleet_repo_url: "https://github.com/harness-landing-zone/harness-kube-management"
             fleet_repo_revision: "main"
             harness_account_id: "qIYsos1ZQO6fJMG1Ip6KJA"
-            harness_org_id: "Harness_Platform_Management"
+            harness_org_id: "gitops_fleet_management"
+
+harnessAgent:
+  enabled: true
+  metadata:
+    name: "hub-hgac"
+  spec:
+    name: "hub-agent"
+    operator: "ARGO"
+    scope: "ORG"
+    type: "MANAGED_ARGO_PROVIDER"
+    # The Secret Name that will read the Harness API the secret must be api_key: <your api key>
+    apiKeySecretRef: "harness-api-key-secret"
+    # Secret of the Token Created when the Agent is Created in Harness Plarform this will be used from Gitops Agent
+    tokenSecretRef: "hub-agent-token"
+    # Optional explicit mapping for ACCOUNT/ORG/PROJECT scope.
+    projectMapping:
+      projectId: "fleet_admins"
+      AppProject: "default"
+
+# Creating the Project in ArgoCD to map it with a project
+appProject:
+  enabled: true
+  name: "default"

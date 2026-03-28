@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: gitops-agent
-  namespace: gitops-agent
+  name: harness-agent
+  namespace: harness-agent
 spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
@@ -18,7 +18,7 @@ spec:
         addonChart: application-sets
   template:
     metadata:
-      name: gitops-agent
+      name: harness-agent
     spec:
       project: default
       sources:
@@ -33,7 +33,7 @@ spec:
           valueFiles:
             - $values/charts/application-sets/harness-bootstrap.yaml
       destination:
-        namespace: gitops-agent
+        namespace: harness-agent
         name: '{{.name}}'
       syncPolicy:
         automated:
