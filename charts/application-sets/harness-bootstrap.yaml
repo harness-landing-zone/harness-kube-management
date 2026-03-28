@@ -7,7 +7,7 @@ repoURLGit: "https://github.com/harness-landing-zone/harness-kube-management"
 repoURLGitRevision: "main"
 repoURLGitBasePath: ""
 valueFiles: []
-namespace: gitops-agent
+namespace: harness-agent
 argoProjectName: default
 syncPolicy:
   automated:
