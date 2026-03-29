@@ -1,3 +1,19 @@
+external-secrets:
+  enabled: true
+  namespace: external-secrets
+  chartName: external-secrets
+  defaultVersion: "0.18.2"
+  chartRepository: "https://charts.external-secrets.io"
+  annotationsApp:
+    argocd.argoproj.io/sync-wave: "1"
+  selector:
+    matchExpressions:
+      - key: enable_agent
+        operator: In
+        values: ["true"]
+  valuesObject:
+    installCRDs: true
+
 harness-agent-controller:
   enabled: true
   namespace: harness-system
