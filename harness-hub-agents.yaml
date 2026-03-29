@@ -15,7 +15,7 @@ spec:
               matchLabels:
                 fleet_member: hub-cluster
             values:
-              addonChart: harness-agent-bootstrap
+              addonChart: harness-gitops-agent-bootstrap
         - git:
             repoURL: '{{.metadata.annotations.fleet_repo_url}}'
             revision: '{{.metadata.annotations.fleet_repo_revision}}'
