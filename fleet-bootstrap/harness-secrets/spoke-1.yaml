@@ -1,0 +1,8 @@
+# Spoke-1 (Model 1) — API key secret deployed to the spoke cluster
+clusterName: spoke-1
+namespace: harness-agent
+destinationCluster: spoke-1
+secretStoreRefName: fake-backend
+secretStoreRefKind: ClusterSecretStore
+targetSecretName: harness-api-key-secret
+secretManagerKey: "harness/api-key"

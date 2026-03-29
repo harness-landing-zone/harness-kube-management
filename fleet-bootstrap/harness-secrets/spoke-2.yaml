@@ -1,0 +1,8 @@
+# Spoke-2 (Model 2 — hub-managed) — API key secret in hub's harness-agent-spoke-2 namespace
+clusterName: spoke-2
+namespace: harness-agent-spoke-2
+destinationCluster: in-cluster
+secretStoreRefName: fake-backend
+secretStoreRefKind: ClusterSecretStore
+targetSecretName: harness-api-key-secret
+secretManagerKey: "harness/api-key"
