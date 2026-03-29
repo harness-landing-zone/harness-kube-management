@@ -1,3 +1,27 @@
+harness-eso-secrets:
+  enabled: true
+  namespace: '{{default "harness-agent" (index .metadata.annotations "harness_agent_namespace")}}'
+  releaseName: harness-eso-secrets
+  path: "charts/fleet-secret"
+  annotationsApp:
+    argocd.argoproj.io/sync-wave: "5"
+  selector:
+    matchExpressions:
+      - key: enable_agent
+        operator: In
+        values: ["true"]
+  valuesObject:
+    genericExternalSecrets:
+      harness-api-key:
+        enabled: true
+        secretStoreRefName: '{{default "fake-backend" (index .metadata.annotations "harness_secret_store_name")}}'
+        secretStoreRefKind: '{{default "ClusterSecretStore" (index .metadata.annotations "harness_secret_store_kind")}}'
+        targetSecretName: '{{default "harness-api-key-secret" (index .metadata.annotations "harness_api_key_secret_ref")}}'
+        refreshInterval: "1h"
+        dataFrom:
+          - extract:
+              key: '{{default "harness/api-key" (index .metadata.annotations "harness_secret_manager_key")}}'
+
 harness-agent-controller:
   enabled: true
   namespace: harness-system
