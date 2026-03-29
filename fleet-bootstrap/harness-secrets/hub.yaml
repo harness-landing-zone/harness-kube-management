@@ -1,7 +1,7 @@
 # Hub cluster — API key secret in harness-agent namespace
 clusterName: hub
 namespace: harness-agent
-destinationCluster: in-cluster
+destinationCluster: hub
 secretStoreRefName: fake-backend
 secretStoreRefKind: ClusterSecretStore
 targetSecretName: harness-api-key-secret
