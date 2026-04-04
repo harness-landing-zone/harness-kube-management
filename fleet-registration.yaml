@@ -20,7 +20,7 @@ spec:
       project: default
       source:
         repoURL: '{{.metadata.annotations.fleet_repo_url}}'
-        path: '{{.metadata.annotations.fleet_repo_basepath}}/fleet-bootstrap'
+        path: 'fleet-bootstrap'
         targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
         directory:
           recurse: false
