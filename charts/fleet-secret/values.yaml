@@ -15,15 +15,9 @@ global:
 secretStore:
   enabled: false
   kind: "SecretStore"
-  provider: "aws"            # "aws" (SecretsManager) or "gcpsm" (GCP Secret Manager)
   name: "aws-secrets-manager"
   region: ""
   role: ""
-  # GCP Secret Manager fields (used when provider: gcpsm)
-  projectID: ""
-  clusterLocation: ""
-  clusterName: ""
-  serviceAccountRef: ""
 
 externalSecret:
   enabled: false
@@ -55,12 +49,11 @@ ecrAuthenticationToken:
 #     harness-api-key:
 #       enabled: true
 #       namespace: harness-agent
-#       secretStoreRefName: fake-backend
+#       secretStoreRefName: aws-secrets-manager
 #       secretStoreRefKind: ClusterSecretStore
 #       targetSecretName: harness-api-key-secret
 #       refreshInterval: "1h"
 #       dataFrom:
 #         - extract:
 #             key: "harness/api-key"
-#             version: "v1"
 genericExternalSecrets: {}
