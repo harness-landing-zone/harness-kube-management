@@ -49,11 +49,12 @@ ecrAuthenticationToken:
 #     harness-api-key:
 #       enabled: true
 #       namespace: harness-agent
-#       secretStoreRefName: aws-secrets-manager
+#       secretStoreRefName: fake-backend
 #       secretStoreRefKind: ClusterSecretStore
 #       targetSecretName: harness-api-key-secret
 #       refreshInterval: "1h"
 #       dataFrom:
 #         - extract:
 #             key: "harness/api-key"
+#             version: "v1"
 genericExternalSecrets: {}
