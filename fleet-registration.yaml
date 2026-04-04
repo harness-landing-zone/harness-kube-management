@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/crds/applicationset-crd.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: fleet-registration
+  namespace: harness-agent
+spec:
+  goTemplate: true
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          fleet_member: hub-cluster
+  template:
+    metadata:
+      name: fleet
+    spec:
+      project: default
+      source:
+        repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+        path: '{{.metadata.annotations.fleet_repo_basepath}}/fleet-bootstrap'
+        targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
+        directory:
+          recurse: false
+          exclude: exclude/*
+      destination:
+        namespace: harness-agent
+        name: '{{.name}}'
+      syncPolicy:
+        automated: {}

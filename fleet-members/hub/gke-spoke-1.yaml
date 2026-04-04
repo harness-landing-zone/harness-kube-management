@@ -1,0 +1,9 @@
+# GKE Spoke-1 — cluster registration to hub
+# Terraform creates the secret in GCP Secret Manager (secrets.tf)
+clusterName: gke-spoke-1
+destinationCluster: hub
+server: remote
+secretManagerSecretName: "hub-cluster_gke-spoke-1"
+# Override SecretStore when hub has a GCP SM SecretStore:
+# secretStoreRefName: "fleet-gcp-secret-store"
+# secretStoreRefKind: "SecretStore"

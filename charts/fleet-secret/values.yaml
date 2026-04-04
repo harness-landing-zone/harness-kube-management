@@ -15,9 +15,15 @@ global:
 secretStore:
   enabled: false
   kind: "SecretStore"
+  provider: "aws"            # "aws" (SecretsManager) or "gcpsm" (GCP Secret Manager)
   name: "aws-secrets-manager"
   region: ""
   role: ""
+  # GCP Secret Manager fields (used when provider: gcpsm)
+  projectID: ""
+  clusterLocation: ""
+  clusterName: ""
+  serviceAccountRef: ""
 
 externalSecret:
   enabled: false
