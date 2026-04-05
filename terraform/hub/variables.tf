@@ -7,44 +7,25 @@ variable "region" {
   default     = "eu-west-2"
 }
 
-variable "cross_account_role_name" {
-  description = "If the deployment is multiaccount thats the defined name of the remote role"
-  type        = string
-  default     = ""
-}
-
 variable "vpc_name" {
-  description = "VPC name to be used by pipelines for data"
+  description = "VPC name"
   type        = string
 }
 
-variable "ecr_account" {
-  description = "The account the the ECR images for the gitops bridge are hosted"
+variable "vpc_cidr" {
+  description = "CIDR block for the hub VPC"
   type        = string
-  default     = ""
+  default     = "10.0.0.0/16"
 }
 
-variable "accounts_config" {
-  description = "Map of objects for per environment configuration"
-  type = map(object({
-    account_id = string
-  }))
-}
-
-variable "kms_key_admin_roles" {
-  description = "list of role ARNs to add to the KMS policy"
-  type        = list(string)
-  default     = []
-}
-
-variable "enable_efs" {
-  description = "Creating EFS File sustem"
+variable "single_nat_gateway" {
+  description = "Use a single NAT gateway for all AZs (cost saving for non-prod)"
   type        = bool
-  default     = false
+  default     = true
 }
 
 ################################################################################
-# Cluster Realted Variables
+# Cluster Related Variables
 ################################################################################
 variable "eks_cluster_endpoint_public_access" {
   description = "Deploying public or private endpoint for the cluster"
@@ -77,30 +58,18 @@ variable "kubernetes_version" {
 
 variable "tenant" {
   type        = string
-  description = "Type of Tenancy of the clusrer this can be in our Case Control plane for Hub cluster and Name of tenant group if its spoke"
+  description = "Type of tenancy — control-plane for hub, tenant name for spoke"
 }
 
 variable "fleet_member" {
-  description = "Defining the fleet membership type of the cluster can be a hub or spoke cluster"
+  description = "Fleet membership type of the cluster (hub or spoke)"
   type        = string
 }
 
 variable "cluster_name" {
   description = "Name of the cluster"
   type        = string
-  default     = "hub-cluster"
-}
-
-variable "enable_hub_external_secrets" {
-  description = "Value to enable hub cluster to update deployiments using external secrets operator this is a string values buecause its added to the lables of argocd secret"
-  type        = string
-  default     = "false"
-}
-
-variable "enable_ack_pod_identity" {
-  description = "Defining to use ack or terraform for pod identity if this is true then we will use this label to deploy resouces with ack"
-  type        = bool
-  default     = false
+  default     = "gitops-hub-cluster"
 }
 
 variable "enable_automode" {
@@ -110,7 +79,7 @@ variable "enable_automode" {
 }
 
 variable "aws_resources" {
-  description = "Resources to be creative for addons"
+  description = "Feature flags for AWS resource creation (pod identities, addons)"
   type        = any
   default     = {}
 }
@@ -120,77 +89,86 @@ variable "environment" {
   type        = string
 }
 
-variable "route53_zone_name" {
-  description = "The route53 zone for external dns"
-  default     = ""
-}
-# Github Repos Variables
-variable "git_creds_secret" {
-  description = "The name of the secret that is used to strore git credentions of argocd to connect"
+################################################################################
+# Git Repository Variables
+################################################################################
+variable "git_org_name" {
+  description = "The name of the Github organisation"
   type        = string
   default     = ""
 }
-variable "git_org_name" {
-  description = "The name of Github organisation"
-  default     = ""
-}
 
-variable "gitops_addons_repo_name" {
-  description = "The name of Github organisation"
-  default     = ""
-}
-
-variable "gitops_addons_repo_path" {
-  description = "The name of Github organisation"
-  default     = ""
-}
-
-variable "gitops_addons_repo_base_path" {
-  description = "The name of Github organisation"
-  default     = ""
-}
-
-variable "gitops_addons_repo_revision" {
-  description = "The name of Github organisation"
-  default     = ""
-}
-# Fleet
 variable "gitops_fleet_repo_name" {
-  description = "The name of Github organisation"
+  description = "The fleet Git repository name"
+  type        = string
   default     = ""
 }
 
 variable "gitops_fleet_repo_path" {
-  description = "The name of Github organisation"
+  description = "Path within the fleet repository"
+  type        = string
   default     = ""
 }
 
 variable "gitops_fleet_repo_base_path" {
-  description = "The name of Github organisation"
+  description = "Base path within the fleet repository"
+  type        = string
   default     = ""
 }
 
 variable "gitops_fleet_repo_revision" {
-  description = "The name of Github organisation"
+  description = "Git revision (branch/tag) for the fleet repository"
+  type        = string
+  default     = "main"
+}
+
+################################################################################
+# Harness GitOps Variables
+################################################################################
+variable "harness_account_id" {
+  description = "Harness account ID"
+  type        = string
+}
+
+variable "harness_org_id" {
+  description = "Harness organisation ID"
+  type        = string
+  default     = "default"
+}
+
+variable "harness_project_id" {
+  description = "Harness project ID (leave empty for Org-level scope)"
+  type        = string
   default     = ""
 }
 
-variable "gitops_resources_repo_name" {
-  description = "The name of Github organisation"
-  default     = ""
+variable "harness_api_token" {
+  description = "Harness platform API token (set via TF_VAR_harness_api_token env var)"
+  type        = string
+  sensitive   = true
 }
 
-variable "gitops_resources_repo_path" {
-  description = "The name of Github organisation"
-  default     = ""
+variable "harness_endpoint" {
+  description = "Harness API gateway endpoint"
+  type        = string
+  default     = "https://app.harness.io/gateway"
 }
 
-variable "gitops_resources_repo_base_path" {
-  description = "The name of Github organisation"
-  default     = ""
+variable "harness_agent_identifier" {
+  description = "Identifier for the Harness GitOps agent on the hub cluster"
+  type        = string
+  default     = "hub-agent"
 }
 
-variable "gitops_resources_repo_revision" {
-  description = "The name of Github organisation"
-  default     = ""
+variable "harness_agent_name" {
+  description = "Display name for the Harness GitOps agent on the hub cluster"
+  type        = string
+  default     = "hub-agent"
 }
+
+variable "harness_agent_namespace" {
+  description = "Kubernetes namespace for the Harness GitOps agent"
+  type        = string
+  default     = "harness-agent"
+}
+

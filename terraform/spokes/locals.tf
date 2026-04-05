@@ -10,7 +10,8 @@ locals {
   tenant                  = var.tenant
   region                  = data.aws_region.current.id
   cluster_version         = var.kubernetes_version
-  argocd_namespace        = "argocd"
+  azs                     = slice(data.aws_availability_zones.available.names, 0, 3)
+  gitops_agent_namespace  = var.harness_agent_namespace
   domain_name             = var.domain_name
   deployment_environment  = var.deployment_environment
 
@@ -75,7 +76,7 @@ locals {
       aws_cluster_name = local.cluster_info.cluster_name
       aws_region       = local.region
       aws_account_id   = data.aws_caller_identity.current.account_id
-      aws_vpc_id       = data.aws_vpc.vpc.id
+      aws_vpc_id       = module.vpc.vpc_id
     },
     {
       aws_efs_csi_driver_controller_service_account = try(local.aws_efs_csi_driver.controller_service_account, "")
@@ -124,7 +125,6 @@ locals {
   access_entries = merge({}, local.admin_access_entries)
 
   tags = {
-    Blueprint  = local.cluster_name
-    GithubRepo = "github.com/gitops-bridge-dev/gitops-bridge"
+    Blueprint = local.cluster_name
   }
 }

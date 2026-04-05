@@ -14,29 +14,3 @@ data "aws_iam_roles" "eks_admin_role" {
   name_regex = "AWSReservedSSO_AdministratorAccess_.*"
 }
 
-data "aws_vpc" "vpc" {
-  filter {
-    name   = "tag:Name"
-    values = ["${var.vpc_name}"]
-  }
-}
-
-data "aws_subnets" "intra_subnets" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.vpc.id]
-  }
-  tags = {
-    Name = "intra-*"
-  }
-}
-
-data "aws_subnets" "private_subnets" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.vpc.id]
-  }
-  tags = {
-    Name = "private-*"
-  }
-}

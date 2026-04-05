@@ -14,5 +14,9 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.22.0"
     }
+    harness = {
+      source  = "harness/harness"
+      version = "~> 0.31"
+    }
   }
 }

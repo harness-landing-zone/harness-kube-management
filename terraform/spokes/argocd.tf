@@ -1,13 +1,21 @@
 ################################################################################
-# ArgoCD EKS Access
+# Harness GitOps — Spoke Cluster Registration
+#
+# The hub Harness GitOps agent manages spoke clusters. The spoke registers
+# itself as a GitOps cluster in Harness and stores its metadata in Secrets
+# Manager so the hub can discover it.
 ################################################################################
-data "aws_ssm_parameter" "argocd_hub_role" {
+
+################################################################################
+# IAM Role for Hub Agent to access spoke cluster via EKS access entries
+################################################################################
+data "aws_ssm_parameter" "harness_hub_role" {
   provider = aws.shared-services
-  name     = "/${local.hub_cluster_name}/argocd-hub-role"
+  name     = "/${local.hub_cluster_name}/harness-hub-role"
 }
 
 resource "aws_iam_role" "spoke" {
-  name               = "${local.cluster_name}-argocd-spoke"
+  name               = "${local.cluster_name}-harness-spoke"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
@@ -16,19 +24,22 @@ data "aws_iam_policy_document" "assume_role_policy" {
     actions = ["sts:AssumeRole", "sts:TagSession"]
     principals {
       type        = "AWS"
-      identifiers = [data.aws_ssm_parameter.argocd_hub_role.value]
+      identifiers = [data.aws_ssm_parameter.harness_hub_role.value]
     }
   }
 }
 
 ################################################################################
-# Secret Required to Register spoke to HUB
+# External Secrets — Hub access to spoke secrets (unchanged)
 ################################################################################
 data "aws_ssm_parameter" "external_secret_pod_identity_role" {
   provider = aws.shared-services
   name     = "/${local.hub_cluster_name}/external-secret-role"
 }
 
+################################################################################
+# Spoke cluster metadata secret — local mode (secret in spoke account)
+################################################################################
 resource "aws_secretsmanager_secret" "spoke_cluster_secret" {
   count                   = var.remote_spoke_secret ? 0 : 1
   name                    = "${local.hub_cluster_name}/${local.cluster_name}"
@@ -36,8 +47,7 @@ resource "aws_secretsmanager_secret" "spoke_cluster_secret" {
   recovery_window_in_days = 0
 }
 
-# Example of Having the Secret on the Spoke Account and Allow Access from HUB external Secrets to pull it
-resource "aws_secretsmanager_secret_version" "argocd_cluster_secret_version" {
+resource "aws_secretsmanager_secret_version" "cluster_secret_version" {
   count     = var.remote_spoke_secret ? 0 : 1
   secret_id = aws_secretsmanager_secret.spoke_cluster_secret[0].id
   secret_string = jsonencode({
@@ -58,7 +68,6 @@ resource "aws_secretsmanager_secret_version" "argocd_cluster_secret_version" {
   })
 }
 
-# Create resource policy to allow access from target account
 resource "aws_secretsmanager_secret_policy" "secret_policy" {
   count      = var.remote_spoke_secret ? 0 : 1
   secret_arn = aws_secretsmanager_secret.spoke_cluster_secret[0].arn
@@ -87,8 +96,6 @@ resource "aws_secretsmanager_secret_policy" "secret_policy" {
   })
 }
 
-
-# Create KMS key in source account
 resource "aws_kms_key" "spoke_secret_kms" {
   count                   = var.remote_spoke_secret ? 0 : 1
   description             = "KMS key for cross-account secret encryption"
@@ -123,15 +130,14 @@ resource "aws_kms_key" "spoke_secret_kms" {
   })
 }
 
-# Create an alias for the KMS key
 resource "aws_kms_alias" "spoke_secret_kms_alias" {
   count         = var.remote_spoke_secret ? 0 : 1
-  name          = "alias/${local.hub_cluster_name}/${local.cluster_name}" # Must start with 'alias/'
+  name          = "alias/${local.hub_cluster_name}/${local.cluster_name}"
   target_key_id = aws_kms_key.spoke_secret_kms[0].key_id
 }
 
 ################################################################################
-# Secret Required to Register spoke to HUB Deployed on the Hub account
+# Spoke cluster metadata secret — remote mode (secret in hub account)
 ################################################################################
 resource "aws_secretsmanager_secret" "remote_spoke_cluster_secret" {
   count                   = var.remote_spoke_secret ? 1 : 0
@@ -140,8 +146,7 @@ resource "aws_secretsmanager_secret" "remote_spoke_cluster_secret" {
   recovery_window_in_days = 0
 }
 
-# Example of Having the Secret on the Spoke Account and Allow Access from HUB external Secrets to pull it
-resource "aws_secretsmanager_secret_version" "remote_argocd_cluster_secret_version" {
+resource "aws_secretsmanager_secret_version" "remote_cluster_secret_version" {
   count     = var.remote_spoke_secret ? 1 : 0
   provider  = aws.shared-services
   secret_id = aws_secretsmanager_secret.remote_spoke_cluster_secret[0].id

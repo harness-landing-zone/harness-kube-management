@@ -1,23 +1,23 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.36.0"
+  version = "~> 21.17"
 
-  cluster_name                   = local.cluster_name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
+  name               = local.cluster_name
+  kubernetes_version  = local.cluster_version
+  endpoint_public_access = var.eks_cluster_endpoint_public_access
 
-  vpc_id                   = data.aws_vpc.vpc.id
-  subnet_ids               = data.aws_subnets.intra_subnets.ids
-  control_plane_subnet_ids = data.aws_subnets.private_subnets.ids
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.intra_subnets
+  control_plane_subnet_ids = module.vpc.private_subnets
 
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     cluster_internal_ingress = {
       description = "Access EKS from VPC."
       protocol    = "tcp"
       from_port   = 443
       to_port     = 443
       type        = "ingress"
-      cidr_blocks = [data.aws_vpc.vpc.cidr_block]
+      cidr_blocks = [module.vpc.vpc_cidr_block]
     }
   }
 
@@ -36,6 +36,8 @@ module "eks" {
       }
     }
   }
+
+  
 
   eks_managed_node_groups = local.enable_automode ? {} : {
     platform = {
@@ -85,12 +87,12 @@ module "eks" {
   #############################################
   # 100 % working Auto-Mode toggle
   #############################################
-  cluster_compute_config = local.cluster_compute_config
+  compute_config = local.cluster_compute_config
 
 
   # EKS Addons
   # If automode is enabled the following addons are managed by Automode
-  cluster_addons = local.enable_automode ? {} : {
+  addons = local.enable_automode ? {} : {
     coredns = {
       most_recent = true
     }
@@ -138,10 +140,12 @@ module "eks" {
     # (i.e. - at most, only one security group should have this tag in your account)
     "karpenter.sh/discovery" = local.cluster_name
   }
+
   tags = {
     Blueprint  = local.cluster_name
     GithubRepo = "https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest"
   }
+
 }
 
 locals {

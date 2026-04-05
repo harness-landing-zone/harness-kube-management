@@ -17,8 +17,20 @@ variable "route53_zone_name" {
 }
 
 variable "vpc_name" {
-  description = "The prefix name of the vpc for the data to loof for it"
+  description = "The prefix name of the vpc for the data to look for it"
   type        = string
+}
+
+variable "vpc_cidr" {
+  description = "CIDR block for the spoke VPC"
+  type        = string
+  default     = "10.1.0.0/16"
+}
+
+variable "single_nat_gateway" {
+  description = "Use a single NAT gateway for all AZs (cost saving for non-prod)"
+  type        = bool
+  default     = true
 }
 
 variable "accounts_config" {
@@ -125,6 +137,56 @@ variable "ami_release_version" {
 
 variable "eks_cluster_endpoint_public_access" {
   description = "Deploying public or private endpoint for the cluster"
-  type = bool
+  type    = bool
   default = true
+}
+
+################################################################################
+# Harness GitOps Variables
+################################################################################
+variable "harness_account_id" {
+  description = "Harness account ID"
+  type        = string
+}
+
+variable "harness_org_id" {
+  description = "Harness organisation ID"
+  type        = string
+  default     = "default"
+}
+
+variable "harness_project_id" {
+  description = "Harness project ID"
+  type        = string
+  default     = "default_project"
+}
+
+variable "harness_api_token" {
+  description = "Harness platform API token (set via TF_VAR_harness_api_token env var)"
+  type        = string
+  sensitive   = true
+}
+
+variable "harness_endpoint" {
+  description = "Harness API gateway endpoint"
+  type        = string
+  default     = "https://app.harness.io/gateway"
+}
+
+variable "harness_agent_identifier" {
+  description = "Identifier for the Harness GitOps agent on this spoke cluster"
+  type        = string
+  default     = ""
+}
+
+variable "harness_agent_name" {
+  description = "Display name for the Harness GitOps agent on this spoke cluster"
+  type        = string
+  default     = ""
+}
+
+variable "harness_agent_namespace" {
+  description = "Kubernetes namespace for the Harness GitOps agent"
+  type        = string
+  default     = "gitops-agent"
 }

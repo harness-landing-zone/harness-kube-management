@@ -97,7 +97,7 @@ module "aws_lb_controller_pod_identity" {
 module "karpenter" {
   count   = local.aws_resources.enable_karpenter ? 1 : 0
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "~> 20.23.0"
+  version = "~> 20.36"
 
   cluster_name = module.eks.cluster_name
 

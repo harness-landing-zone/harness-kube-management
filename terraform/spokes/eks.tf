@@ -4,15 +4,15 @@
 #tfsec:ignore:aws-eks-enable-control-plane-logging
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.36.0"
+  version = "~> 20.36"
 
   cluster_name                   = local.cluster_name
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = var.eks_cluster_endpoint_public_access
 
-  vpc_id                   = data.aws_vpc.vpc.id
-  subnet_ids               = data.aws_subnets.intra_subnets.ids
-  control_plane_subnet_ids = data.aws_subnets.private_subnets.ids
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.intra_subnets
+  control_plane_subnet_ids = module.vpc.private_subnets
 
   # Cluster access entry
   # To add the current caller identity as an administrator
@@ -31,7 +31,7 @@ module "eks" {
         }
       }
     }
-    argo = {
+    harness-hub = {
       principal_arn = aws_iam_role.spoke.arn
       policy_associations = {
         admins = {
@@ -178,7 +178,7 @@ module "eks" {
       from_port   = 443
       to_port     = 443
       type        = "ingress"
-      cidr_blocks = [data.aws_vpc.vpc.cidr_block]
+      cidr_blocks = [module.vpc.vpc_cidr_block]
     }
   }
 
