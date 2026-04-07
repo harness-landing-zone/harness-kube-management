@@ -4,7 +4,7 @@ mergeValues:
 releaseName: default
 useSelectors: true
 repoURLGit: "https://github.com/harness-landing-zone/harness-kube-management"
-repoURLGitRevision: "main"
+repoURLGitRevision: "eks"
 repoURLGitBasePath: ""
 valueFiles: []
 namespace: harness-agent
