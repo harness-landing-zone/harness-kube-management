@@ -1,5 +1,5 @@
 # Hub cluster — API key secret in harness-agent namespace
-clusterName: hub
+clusterName: gitops-hub-cluster
 namespace: harness-agent
 destinationCluster: hub
 secretStoreRefName: fleet-secret-store
