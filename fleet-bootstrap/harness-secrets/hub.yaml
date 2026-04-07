@@ -3,6 +3,12 @@ clusterName: gitops-hub-cluster
 namespace: harness-agent
 destinationCluster: gitops-hub-cluster
 
+secretStore:
+  enabled: false
+
+clusterRegistration:
+  enabled: false
+
 genericExternalSecrets:
   enabled: "true"
 
