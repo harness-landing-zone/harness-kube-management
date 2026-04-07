@@ -1,9 +1,0 @@
-clusterName: "spoke-spoke-1"
-destinationCluster: gitops-hub-cluster
-secretManagerSecretName: "gitops-hub-cluster/spoke-spoke-1"
-enable_external_secrets: "true"
-enable_agent_controller: "true"
-enable_harness_secret: "true"
-enable_agent: "true"
-environment: "np"
-harness_project_id: spoke1
