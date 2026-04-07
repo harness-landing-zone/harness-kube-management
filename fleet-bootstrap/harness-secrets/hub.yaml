@@ -1,7 +1,12 @@
 # Hub cluster — API key secret in harness-agent namespace
 clusterName: gitops-hub-cluster
 namespace: harness-agent
-destinationCluster: hub
-secretStoreRefName: fleet-secret-store
-targetSecretName: harness-api-key-secret
-secretManagerKey: "harness/api-key"
+destinationCluster: gitops-hub-cluster
+
+genericExternalSecrets:
+  enabled: "true"
+
+apiKey:
+  targetSecretName: harness-api-key-secret
+  secretManagerKey: "/gitops-hub/harness_key"
+  refreshInterval: "1h"
