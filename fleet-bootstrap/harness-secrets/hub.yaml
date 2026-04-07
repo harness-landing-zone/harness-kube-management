@@ -5,6 +5,7 @@ destinationCluster: gitops-hub-cluster
 
 secretStore:
   enabled: false
+  kind: SecretStore
 
 clusterRegistration:
   enabled: false
