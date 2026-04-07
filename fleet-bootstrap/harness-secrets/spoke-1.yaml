@@ -1,0 +1,23 @@
+# Spoke 1 — register to hub via ExternalSecret
+clusterName: spoke-spoke-1
+namespace: harness-agent
+destinationCluster: gitops-hub-cluster
+
+secretStore:
+  enabled: false
+  kind: SecretStore
+  name: fleet-secret-store
+
+clusterRegistration:
+  enabled: "true"
+  server: ""
+  secretManagerSecretName: "gitops-hub-cluster/spoke-spoke-1"
+  labels: {}
+  annotations: {}
+
+genericExternalSecrets:
+  enabled: false
+
+apiKey:
+  targetSecretName: harness-api-key-secret
+  secretManagerKey: "/gitops-hub/harness_key"
