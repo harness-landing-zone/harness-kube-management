@@ -3,5 +3,5 @@ destinationCluster: gitops-hub-cluster
 secretManagerSecretName: "gitops-hub-cluster/spoke-spoke-1"
 enable_external_secrets: "true"
 enable_agent_controller: "true"
-enable_agent: "false"
+enable_agent: "true"
 environment: "np"
