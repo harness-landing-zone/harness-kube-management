@@ -8,7 +8,7 @@ external-secrets:
     argocd.argoproj.io/sync-wave: "1"
   selector:
     matchExpressions:
-      - key: enable_agent
+      - key: enable_external_secrets
         operator: In
         values: ["true"]
   valuesObject:
@@ -25,7 +25,7 @@ harness-agent-controller:
     argocd.argoproj.io/sync-wave: "10"
   selector:
     matchExpressions:
-      - key: enable_controller
+      - key: enable_agent_controller
         operator: In
         values: ["true"]
   valuesObject:
