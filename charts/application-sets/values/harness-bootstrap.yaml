@@ -83,33 +83,33 @@ harness-agent-bootstrap:
         existingSecrets:
           agentToken: '{{default (printf "%s-agent-token" .name) (index .metadata.annotations "harness_token_secret_ref")}}'
 
-harness-secret:
-  enabled: true
-  namespace: gitops-agent
-  releaseName: harness-secret
-  chartName: harness-secret
-  defaultVersion: "0.3.0"
-  path: "charts/fleet-secret"
-  annotationsApp:
-    argocd.argoproj.io/sync-wave: "5"
-  selector:
-    matchExpressions:
-      - key: enable_harness_secret
-        operator: In
-        values: ["true"]
-  valuesObject:
-    secretStore:
-      enabled: "true"
-      kind: SecretStore
-      name: fleet-secret-store
-      region: '{{default "eu-west-2" (index .metadata.annotations "aws_region")}}'
-    genericExternalSecrets:
-      harness-api-key:
-        enabled: "true"
-        secretStoreRefName: fleet-secret-store
-        secretStoreRefKind: SecretStore
-        targetSecretName: harness-api-key-secret
-        refreshInterval: "1h"
-        dataFrom:
-          - extract:
-              key: "/gitops-hub/harness_key"
+# harness-secret:
+#   enabled: true
+#   namespace: gitops-agent
+#   releaseName: harness-secret
+#   chartName: harness-secret
+#   defaultVersion: "0.3.0"
+#   path: "charts/fleet-secret"
+#   annotationsApp:
+#     argocd.argoproj.io/sync-wave: "5"
+#   selector:
+#     matchExpressions:
+#       - key: enable_harness_secret
+#         operator: In
+#         values: ["true"]
+#   valuesObject:
+#     secretStore:
+#       enabled: "true"
+#       kind: SecretStore
+#       name: fleet-secret-store
+#       region: '{{default "eu-west-2" (index .metadata.annotations "aws_region")}}'
+#     genericExternalSecrets:
+#       harness-api-key:
+#         enabled: "true"
+#         secretStoreRefName: fleet-secret-store
+#         secretStoreRefKind: SecretStore
+#         targetSecretName: harness-api-key-secret
+#         refreshInterval: "1h"
+#         dataFrom:
+#           - extract:
+#               key: "/gitops-hub/harness_key"

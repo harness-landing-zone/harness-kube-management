@@ -13,7 +13,7 @@ module "external_secrets_pod_identity" {
   external_secrets_kms_key_arns       = ["arn:aws:kms:*:*:key/*"]
   external_secrets_ssm_parameter_arns = ["arn:aws:ssm:${local.region}:*:parameter/${module.eks.cluster_name}/*"]
   external_secrets_secrets_manager_arns = [
-    "arn:aws:secretsmanager:${local.region}:*:secret:hub/${module.eks.cluster_name}*",
+    "arn:aws:secretsmanager:${local.region}:*:secret:*",
     "arn:aws:secretsmanager:${local.region}:*:secret:${module.eks.cluster_name}/*",
     "arn:aws:secretsmanager:${local.region}:*:secret:github*"
   ]

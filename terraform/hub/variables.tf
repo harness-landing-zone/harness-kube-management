@@ -42,7 +42,7 @@ variable "managed_node_group_ami" {
 variable "managed_node_group_instance_types" {
   description = "List of managed node group instances"
   type        = list(string)
-  default     = ["m5.large"]
+  default     = ["m5.xlarge"]
 }
 
 variable "ami_release_version" {
