@@ -6,3 +6,4 @@ enable_agent_controller: "true"
 enable_harness_secret: "true"
 enable_agent: "false"
 environment: "np"
+harness_project_id: spoke1

@@ -1,4 +1,33 @@
-harness_project_id: spoke1
-harness_account_id: qIYsos1ZQO6fJMG1Ip6KJA
-harness_org_id: eksfleetmanagement
+# harnessAgent:
+#   enabled: true
+#   metadata:
+#     name: "spoke-hga"
+#   spec:
+#     name: "spoke-hga"
+#     operator: "ARGO"
+#     scope: "PROJECT"
+#     type: "MANAGED_ARGO_PROVIDER"
+#     apiKeySecretRef: "harness-api-key-secret"
+#     tokenSecretRef: "my-spoke-token"
 
+# appProject:
+#   enabled: true
+#   name: "default"
+
+# gitopsAgent:
+#   harness:
+#     identity:
+#       accountIdentifier: "qIYsos1ZQO6fJMG1Ip6KJA"
+#       orgIdentifier: "eksfleetmanagement"
+#       # Keep empty for ORG-scope runtime registration.
+#       projectIdentifier: ""
+#       # Keep unprefixed; controller adds org./account. prefixes for API-path calls.
+#       agentIdentifier: "hubhga"
+#     configMap:
+#       http:
+#         tlsEnabled: false
+#         agentHttpTarget: "https://app.harness.io/gitops"
+#       logLevel: "info"
+#   agent:
+#     existingSecrets:
+#       agentToken: "my-hga-token"
