@@ -1,0 +1,9 @@
+spoke_cluster_name     = "spoke-spoke-1"
+vpc_name               = "spoke-spoke-1"
+vpc_cidr               = "10.1.0.0/16"
+single_nat_gateway     = true
+tenant                 = "tenant1"
+hub_cluster_name       = "gitops-hub-cluster"
+deployment_environment = "np"
+kubernetes_version     = "1.34"
+enable_automode        = false

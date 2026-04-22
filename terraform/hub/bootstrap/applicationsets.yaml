@@ -1,47 +1,31 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: harness-agent-bootstrap
+  name: hub-bootstrap
   namespace: harness-agent
 spec:
+  goTemplate: true
   syncPolicy:
     preserveResourcesOnDeletion: true
-  goTemplate: true
-  goTemplateOptions:
-    - missingkey=error
   generators:
   - clusters:
       selector:
         matchLabels:
-          fleet_member: gitops-hub-cluster
-      values:
-        addonChart: application-sets
+          fleet_member: hub-cluster
   template:
     metadata:
-      name: harness-agent-bootstrap
+      name: hub-bootstrap
     spec:
       project: default
-      sources:
-      - ref: values
+      source:
         repoURL: '{{.metadata.annotations.fleet_repo_url}}'
+        path: '{{.metadata.annotations.fleet_repo_basepath}}{{.metadata.annotations.fleet_repo_path}}'
         targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
-      - repoURL: '{{.metadata.annotations.fleet_repo_url}}'
-        path: 'charts/{{.values.addonChart}}'
-        targetRevision: '{{.metadata.annotations.fleet_repo_revision}}'
-        helm:
-          ignoreMissingValueFiles: true
-          valueFiles:
-            - $values/charts/application-sets/harness-bootstrap.yaml
+        directory:
+          recurse: false
+          exclude: exclude/*
       destination:
         namespace: harness-agent
         name: '{{.name}}'
       syncPolicy:
-        automated:
-          selfHeal: false
-          allowEmpty: true
-          prune: false
-        retry:
-          limit: 100
-        syncOptions:
-          - CreateNamespace=true
-          - ServerSideApply=true
+        automated: {}

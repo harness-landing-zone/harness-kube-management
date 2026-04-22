@@ -29,7 +29,7 @@ aws_resources = {
 git_org_name                = "harness-landing-zone"
 gitops_fleet_repo_name      = "harness-kube-management"
 gitops_fleet_repo_base_path = ""
-gitops_fleet_repo_path      = ""
+gitops_fleet_repo_path      = "bootstrap"
 gitops_fleet_repo_revision  = "eks"
 
 ################################################################################

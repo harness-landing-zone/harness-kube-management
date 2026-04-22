@@ -6,8 +6,12 @@ module "eks" {
   kubernetes_version  = local.cluster_version
   endpoint_public_access = var.eks_cluster_endpoint_public_access
 
+  # Disable control plane logs to save ~$60/mo
+  enabled_log_types           = []
+  create_cloudwatch_log_group = false
+
   vpc_id                   = module.vpc.vpc_id
-  subnet_ids               = module.vpc.intra_subnets
+  subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.private_subnets
 
   security_group_additional_rules = {
@@ -22,20 +26,20 @@ module "eks" {
   }
 
   enable_cluster_creator_admin_permissions = true
-  access_entries = {
-    # access entry with a policy associated for admins
-    kube-admins = {
-      principal_arn = tolist(data.aws_iam_roles.eks_admin_role.arns)[0]
-      policy_associations = {
-        admins = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
+  # access_entries = {
+  #   # access entry with a policy associated for admins
+  #   kube-admins = {
+  #     principal_arn = tolist(data.aws_iam_roles.eks_admin_role.arns)[0]
+  #     policy_associations = {
+  #       admins = {
+  #         policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  #         access_scope = {
+  #           type = "cluster"
+  #         }
+  #       }
+  #     }
+  #   }
+  # }
 
   
 
@@ -51,9 +55,9 @@ module "eks" {
       # In Case you want to control the version of the ami
       ami_release_version            = var.ami_release_version
       use_latest_ami_release_version = var.managed_node_group_ami != "" ? false : true
-      min_size                       = 3
-      max_size                       = 6
-      desired_size                   = 3
+      min_size                       = 2
+      max_size                       = 3
+      desired_size                   = 2
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
@@ -78,9 +82,6 @@ module "eks" {
           }
         }
       }
-      labels = {
-        type = "criticalAddons"
-      }
     }
   }
 
@@ -100,7 +101,7 @@ module "eks" {
       most_recent = true
     }
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent = false
     }
     amazon-cloudwatch-observability = {
       most_recent = true

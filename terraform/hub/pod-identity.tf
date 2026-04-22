@@ -13,7 +13,7 @@ module "external_secrets_pod_identity" {
   external_secrets_kms_key_arns       = ["arn:aws:kms:*:*:key/*"]
   external_secrets_ssm_parameter_arns = ["arn:aws:ssm:${local.region}:*:parameter/${module.eks.cluster_name}/*"]
   external_secrets_secrets_manager_arns = [
-    "arn:aws:secretsmanager:${local.region}:*:secret:*",
+    "arn:aws:secretsmanager:${local.region}:*:secret:hub/${module.eks.cluster_name}*",
     "arn:aws:secretsmanager:${local.region}:*:secret:${module.eks.cluster_name}/*",
     "arn:aws:secretsmanager:${local.region}:*:secret:github*"
   ]
@@ -70,26 +70,26 @@ module "aws_cloudwatch_observability_pod_identity" {
 ################################################################################
 # EBS CSI EKS Access
 ################################################################################
-module "aws_ebs_csi_pod_identity" {
-  source  = "terraform-aws-modules/eks-pod-identity/aws"
-  version = "~> 1.12.0"
+# module "aws_ebs_csi_pod_identity" {
+#   source  = "terraform-aws-modules/eks-pod-identity/aws"
+#   version = "~> 1.12.0"
 
-  name = "aws-ebs-csi"
+#   name = "aws-ebs-csi"
 
-  attach_aws_ebs_csi_policy = true
-  aws_ebs_csi_kms_arns      = ["arn:aws:kms:*:*:key/*"]
+#   attach_aws_ebs_csi_policy = true
+#   aws_ebs_csi_kms_arns      = ["arn:aws:kms:*:*:key/*"]
 
-  # Pod Identity Associations
-  associations = {
-    addon = {
-      cluster_name    = module.eks.cluster_name
-      namespace       = "kube-system"
-      service_account = "ebs-csi-controller-sa"
-    }
-  }
+#   # Pod Identity Associations
+#   associations = {
+#     addon = {
+#       cluster_name    = module.eks.cluster_name
+#       namespace       = "kube-system"
+#       service_account = "ebs-csi-controller-sa"
+#     }
+#   }
 
-  tags = local.tags
-}
+#   tags = local.tags
+# }
 
 ################################################################################
 # AWS ALB Ingress Controller EKS Access
@@ -187,5 +187,47 @@ module "cni_metrics_helper_pod_identity" {
       service_account = "cni-metrics-helper"
     }
   }
+  tags = local.tags
+}
+
+################################################################################
+# Creating parameter for argocd hub role for the spoke clusters to read
+################################################################################
+resource "aws_ssm_parameter" "argocd_hub_role" {
+  name  = "/${local.cluster_name}/agent-hub-role"
+  type  = "String"
+  value = module.argocd_hub_pod_identity.iam_role_arn
+}
+
+module "argocd_hub_pod_identity" {
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.12.0"
+
+  name = "harness-agent"
+
+  attach_custom_policy = true
+  policy_statements = [
+    {
+      sid       = "harness"
+      actions   = ["sts:AssumeRole", "sts:TagSession"]
+      resources = ["*"]
+    }
+  ]
+
+  # Pod Identity Associations
+  association_defaults = {
+    namespace = "harness-agent"
+  }
+  associations = {
+    controller = {
+      cluster_name    = module.eks.cluster_name
+      service_account = "argocd-application-controller"
+    }
+    server = {
+      cluster_name    = module.eks.cluster_name
+      service_account = "gitops-agent"
+    }
+  }
+
   tags = local.tags
 }
