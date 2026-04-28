@@ -114,7 +114,7 @@ harness-secret:
           - extract:
               key: "/gitops-hub/harness_key"
 aws-load-balancer-controller:
-  enabled: false
+  enabled: true
   enableAckPodIdentity: false
   namespace: kube-system
   defaultVersion: "1.12.0"
