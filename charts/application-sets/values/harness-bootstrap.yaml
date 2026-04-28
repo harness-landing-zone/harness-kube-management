@@ -113,3 +113,40 @@ harness-secret:
         dataFrom:
           - extract:
               key: "/gitops-hub/harness_key"
+aws-load-balancer-controller:
+  enabled: false
+  enableAckPodIdentity: false
+  namespace: kube-system
+  defaultVersion: "1.12.0"
+  chartRepository: "https://aws.github.io/eks-charts"
+  selector:
+    matchExpressions:
+      - key: enable_aws_load_balancer_controller
+        operator: In
+        values: ['true']
+  valuesObject:
+    serviceAccount:
+      name:  "aws-load-balancer-controller-sa"
+    vpcId: '{{.metadata.annotations.aws_vpc_id}}'
+    clusterName: '{{.name}}'
+  ignoreDifferences:
+    - kind: Secret
+      name: aws-load-balancer-tls
+      jsonPointers: [/data]
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      jqPathExpressions: ['.webhooks[].clientConfig.caBundle']
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jqPathExpressions: ['.webhooks[].clientConfig.caBundle']
+metrics-server:
+  enabled: true
+  enableAckPodIdentity: false
+  namespace: kube-system
+  defaultVersion: "3.11.0"
+  chartRepository: "https://kubernetes-sigs.github.io/metrics-server"
+  selector:
+    matchExpressions:
+      - key: enable_metrics_server
+        operator: In
+        values: ['true']
