@@ -2,7 +2,7 @@ external-secrets:
   enabled: true
   namespace: external-secrets
   chartName: external-secrets
-  defaultVersion: "0.18.2"
+  defaultVersion: "2.4.1"
   chartRepository: "https://charts.external-secrets.io"
   annotationsApp:
     argocd.argoproj.io/sync-wave: "1"
@@ -113,11 +113,12 @@ harness-secret:
         dataFrom:
           - extract:
               key: "/gitops-hub/harness_key"
+
 aws-load-balancer-controller:
   enabled: true
   enableAckPodIdentity: false
   namespace: kube-system
-  defaultVersion: "1.12.0"
+  defaultVersion: "3.2.2"
   chartRepository: "https://aws.github.io/eks-charts"
   selector:
     matchExpressions:
@@ -143,10 +144,33 @@ metrics-server:
   enabled: true
   enableAckPodIdentity: false
   namespace: kube-system
-  defaultVersion: "3.11.0"
+  defaultVersion: "3.13.0"
   chartRepository: "https://kubernetes-sigs.github.io/metrics-server"
   selector:
     matchExpressions:
       - key: enable_metrics_server
         operator: In
         values: ['true']
+        
+karpenter:
+  enabled: false
+  enableAckPodIdentity: false
+  releaseName: karpenter
+  namespace: 'kube-system'
+  chartNamespace: karpenter
+  chartName: karpenter
+  chartRepository: public.ecr.aws
+  defaultVersion: "1.12.0"
+  selector:
+    matchExpressions:
+      - key: enable_karpenter
+        operator: In
+        values: ['true']
+  valuesObject:
+    settings:
+      clusterName: '{{.metadata.annotations.aws_cluster_name}}'
+      interruptionQueue: '{{default "" (index .metadata.annotations "karpenter_sqs_queue_name")}}'
+    serviceAccount:
+      name: '{{default "karpenter" (index .metadata.annotations "karpenter_service_account")}}'
+      annotations:
+        eks.amazonaws.com/role-arn: '{{default "" (index .metadata.annotations "karpenter_iam_role_arn")}}'
