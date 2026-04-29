@@ -151,9 +151,9 @@ metrics-server:
       - key: enable_metrics_server
         operator: In
         values: ['true']
-        
+
 karpenter:
-  enabled: false
+  enabled: true
   enableAckPodIdentity: false
   releaseName: karpenter
   namespace: 'kube-system'
